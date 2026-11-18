@@ -96,6 +96,7 @@ function rTitle() {
     <div class="meta">${LESSON.school}<br>Мұғалім: ${LESSON.teacher}</div>
     <div class="hello">👋</div>
     <h1>Сәлеметсіздер ме, балалар!</h1>
+    <div class="bigtopic">${LESSON.topic.replace(". ", ".<br>")}</div>
     <div class="groups-strip">${GROUPS.map(g => `<span class="gchip" style="background:${g.color}">${g.icon} ${g.name}</span>`).join("")}</div>
   </div>`;
 }
