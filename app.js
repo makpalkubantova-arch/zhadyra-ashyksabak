@@ -125,13 +125,13 @@ function ytEmbed(u) {
   return m ? `https://www.youtube.com/embed/${m[1]}` : u;
 }
 function rVideo() {
-  const v = state.video;
+  const v = state.video || "kurlyk_sulary.mp4";
   const player = v ? (/\.(mp4|webm)$/i.test(v) ? `<video src="${esc(v)}" controls></video>` : `<iframe src="${esc(ytEmbed(v))}" allowfullscreen></iframe>`)
     : `<div>Видео сілтемесін төменге қойыңыз</div>`;
   return head("Бейнежазба және түсіндіру", "Видеоны көріп, мұғалімнің сұрақтарына жауап береміз.") +
     `<div class="grid3" style="grid-template-columns:3fr 2fr">
       <div><div class="video">${player}</div>
-        <div class="row" style="margin-top:10px"><input id="vurl" placeholder="YouTube сілтемесі" value="${esc(v)}" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);font-size:15px">
+        <div class="row" style="margin-top:10px"><input id="vurl" placeholder="Басқа видео қойғыңыз келсе — YouTube сілтемесі" value="${esc(state.video)}" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);font-size:15px">
         <button class="btn ghost" onclick="state.video=$('#vurl').value.trim();saveState();go(cur)">Қою</button></div></div>
       <div class="card"><h3 style="margin-top:0">Мұғалімнің сұрақтары</h3>
         ${VIDEO_Q.map((q, i) => `<div class="qa"><b>${i + 1}.</b> ${q.q}
