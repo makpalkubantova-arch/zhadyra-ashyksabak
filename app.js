@@ -62,9 +62,8 @@ const STAGES = [
   { t: "Тақта ойыны", min: "8 мин", r: rBoard, m: "Әдіс: «Су ойыны» — сұрақ-жауап + спикерлер дайындығы" },
   { t: "Спикерлер", min: "7 мин", r: rSpeakers, m: "Әдіс: «Спикерлер алаңы» (оқушы оқушыға түсіндіреді)" },
   { t: "Топтық", min: "3 мин", r: rGroup, m: "Әдіс: «Конвертте не бар?»" },
-  { t: "Оқулық", min: "5 мин", r: rBook, m: "Әдіс: «Детектив» (оқулықтан іздеу)" },
-  { t: "Жұмыс парағы", min: "7 мин", r: rWorksheet, m: "Әдіс: «Таймермен жеке жұмыс» (саралап оқыту, 5 нұсқа)" },
-  { t: "Тексеру", min: "5 мин", r: rCheck, m: "Әдіс: «Үш сүзгі» — өзін-өзі, өзара, мұғалім" },
+  { t: "Оқулық", min: "5 мин", r: rBook, m: "Әдіс: «Детектив» + «Үш сүзгі» тексеру" },
+  { t: "Жұмыс парағы", min: "7 мин", r: rWorksheet, m: "Әдіс: саралап оқыту (5 нұсқа) + «Үш сүзгі» тексеру" },
   { t: "Рейтинг", min: "1 мин", r: rRating, m: "Әдіс: «Көшбасшылар тұғыры»" },
   { t: "Кері байланыс", min: "2 мин", r: rFeedback, m: "Әдіс: «Тамшының жолы» (Өзен · Көл · Батпақ)" }
 ];
@@ -119,7 +118,7 @@ function rIntro() {
     <div class="row" style="margin-top:14px"><button class="btn" id="btnGoals" onclick="showGoals()" ${all ? "" : "disabled style='opacity:.4'"}>Тақырып пен мақсатты ашу</button>
     <button class="btn ghost" onclick="state.intro=[];state.goalsShown=false;saveState();go(cur)">Қайта бастау</button></div>
     <div id="goals" class="reveal ${state.goalsShown ? "" : "hidden"}"><b>Тақырып:</b> ${LESSON.topic}<br>
-      <b>1-мақсат:</b> ${LESSON.goals[0]}.<br><b>2-мақсат:</b> ${LESSON.goals[1]}.<br>
+      <div id="memo"></div>
       <b>Бағалау:</b> ${CRITERIA.map(c => `${c.name} — ${c.max} б.`).join(" · ")} · <b>Барлығы — 10 балл</b></div>`;
 }
 function openIntro(i) {
@@ -130,7 +129,16 @@ function openIntro(i) {
   const b = document.querySelector("#btnGoals");
   if (SLOT_ORDER.every(id => state.intro.some(k => QUOTES[k].g === id)) && b) { b.disabled = false; b.style.opacity = 1; }
 }
-function showGoals() { state.goalsShown = true; saveState(); $("#goals").classList.remove("hidden"); confetti(); }
+function showGoals() { state.goalsShown = true; saveState(); $("#goals").classList.remove("hidden"); confetti(); memoLevel = 0; renderMemo(); }
+// «Жоғалатын сөздер» — мақсатты жаттау
+let memoLevel = 0;
+function renderMemo() {
+  const box = document.getElementById("memo"); if (!box) return;
+  const hideWord = (w, gi, wi) => { const r = ((gi * 31 + wi * 17) % 10) / 10; return memoLevel > 0 && r < memoLevel * 0.34 ? `<span class="mw gone">${"_".repeat(Math.max(3, w.length))}</span>` : `<span class="mw">${w}</span>`; };
+  box.innerHTML = LESSON.goals.map((g, gi) => `<div class="mg"><b>🎯 ${gi + 1}-мақсат:</b> ${g.split(" ").map((w, wi) => hideWord(w, gi, wi)).join(" ")}</div>`).join("") +
+    `<div class="row" style="margin-top:10px"><span class="mstep">${["1. Бірге дауыстап оқимыз", "2. Кейбір сөздер жоғалды — есіңе түсір!", "3. Жартысы жоқ — топпен айт!", "4. Бәрі жоғалды — жатқа айт! 💪"][memoLevel]}</span>
+     ${memoLevel < 3 ? `<button class="btn" onclick="memoLevel++;renderMemo()">Сөздерді жасыру →</button>` : `<button class="btn ok" onclick="memoLevel=0;renderMemo();confetti()">Қайта көрсету ✓</button>`}</div>`;
+}
 
 // 3. Бейне
 function ytEmbed(u) {
@@ -157,28 +165,46 @@ function rVideo() {
 // 4. Тақта ойыны — 15 сұрақ, жауап бірден белгіленеді
 let gq = 0, gAns = null;
 const SHAPES = [["▲", "#e2483d"], ["◆", "#1e6fd9"], ["●", "#f2a900"], ["■", "#14a46c"]];
+const BQ_TYPE = ["ozen","zherasty","zherasty","zherasty","zherasty","ozen","ozen","kol","kol","kol","kol","batpak","batpak","muzdyk","muzdyk"];
+let gWho = null;
 function rBoard() {
-  const b = state.board; const q = BOARD_Q[gq];
+  const b = state.board; const q = BOARD_Q[gq]; const g = G(BQ_TYPE[gq]);
   const right = Object.values(b).filter(v => v === true).length;
-  const dots = BOARD_Q.map((_, i) => `<span class="gdot ${i === gq ? "cur" : b[i] === true ? "ok" : b[i] === false ? "no" : ""}" onclick="gq=${i};gAns=null;go(cur)">${i + 1}</span>`).join("");
+  const dots = BOARD_Q.map((_, i) => `<span class="gdot ${i === gq ? "cur" : b[i] === true ? "ok" : b[i] === false ? "no" : ""}" onclick="gq=${i};gAns=null;gWho=null;go(cur)">${i + 1}</span>`).join("");
   const opts = q.o.map((o, k) => { let cls = ""; if (gAns !== null) { if (k === q.a) cls = "right"; else if (k === gAns) cls = "wrong"; else cls = "dim"; }
     return `<button class="gopt ${cls}" style="--c:${SHAPES[k][1]}" onclick="gAnswer(${k})" ${gAns !== null ? "disabled" : ""}><span class="sh">${SHAPES[k][0]}</span>${o}</button>`; }).join("");
+  const who = gWho !== null ? `<div class="gwho" style="--c:${G(S[gWho].g).color}">🙋 Жауап береді: <b>${esc(S[gWho].name)}</b></div>` : "";
   const after = gAns === null ? "" : `<div class="gafter ${gAns === q.a ? "ok" : "no"}">
-      <div class="verdict">${gAns === q.a ? "✅ Дұрыс! +1 балл" : "❌ Қате! Дұрыс жауабы жасылмен белгіленді"}</div>
-      ${gAns === q.a ? `<div class="who-chips"><span>Кім жауап берді?</span>${S.map((s, i) => s.st ? "" : `<button style="--c:${G(s.g).color}" onclick="giveQuick(${i},this)">${esc(s.name)}</button>`).join("")}</div>` : ""}
+      <div class="verdict">${gAns === q.a ? (gWho !== null ? `✅ Дұрыс! ${esc(S[gWho].name)} +1 балл` : "✅ Дұрыс! +1 балл") : "❌ Қате! Дұрыс жауабы жасылмен белгіленді"}</div>
+      ${gAns === q.a && gWho === null ? `<div class="who-chips"><span>Кім жауап берді?</span>${S.map((s, i) => s.st ? "" : `<button style="--c:${G(s.g).color}" onclick="giveQuick(${i},this)">${esc(s.name)}</button>`).join("")}</div>` : ""}
       <button class="btn" onclick="gNext()">${gq < BOARD_Q.length - 1 ? "Келесі сұрақ →" : "Ойын аяқталды 🎉"}</button></div>`;
-  return head("Тақта ойыны: 15 сұрақ", "Оқушы тақтаға шығып жауапты басады — бірден белгіленеді. Осы уақытта 5 спикер дайындалады.") +
-    `<div class="row" style="justify-content:space-between;margin-bottom:12px">${timerHTML(480)}<div class="gscore">✅ ${right} / ${BOARD_Q.length}</div></div>
-    <div class="gdots">${dots}</div>
-    <div class="gcard"><div class="gnum">${gq + 1}-сұрақ · оқулық ${q.p}-бет</div><div class="gq">${q.q}</div></div>
-    <div class="gopts">${opts}</div>${after}`;
+  return head("Тақта ойыны: 15 сұрақ", "🎲 оқушыны кездейсоқ таңдайды → оқушы тақтада жауапты басады → бірден белгіленеді. Осы уақытта 5 спикер дайындалады.") +
+    `<div class="row" style="justify-content:space-between;margin-bottom:10px">${timerHTML(480)}<div class="gdots">${dots}</div><div class="gscore">✅ ${right} / ${BOARD_Q.length}</div></div>
+    <div class="g3">
+      <div class="gmodel"><div class="gmh" style="background:${g.color}">${g.icon} Макет: ${g.name}</div><div class="dwrap" data-d="img/d_${g.id}.svg"><img src="img/d_${g.id}.svg" alt=""></div></div>
+      <div><div class="gcard"><div class="gnum">${gq + 1}-сұрақ · оқулық ${q.p}-бет</div><div class="gq">${q.q}</div></div>
+        <div class="row" style="margin-top:10px"><button class="btn" onclick="pickWho()" ${gAns !== null ? "disabled style='opacity:.5'" : ""}>🎲 Кездейсоқ оқушы</button>${who}</div>
+        <div class="gopts">${opts}</div>${after}</div>
+      <div class="gdesc"><div class="gdh">📋 Дескриптор</div>
+        <ul><li>Сұрақты дауыстап оқиды</li><li>Дұрыс жауапты таңдайды</li><li>Жауабын бір сөйлеммен түсіндіреді</li></ul>
+        <div class="gball">Әр дұрыс жауап — <b>1 балл</b></div>
+        <div class="gdh" style="margin-top:12px">🏅 Балл алғандар</div><div class="gdone">${S.filter(s => s.st).map(s => `<span style="--c:${G(s.g).color}">${esc(s.name)}</span>`).join("") || "<i>әзірге жоқ</i>"}</div></div>
+    </div>`;
+}
+function pickWho() {
+  let pool = S.map((s, i) => i).filter(i => !S[i].st); if (!pool.length) pool = S.map((s, i) => i);
+  let n = 0; const total = 14;
+  (function step() { gWho = pool[Math.floor(Math.random() * pool.length)]; const el = document.querySelector(".gwho") ;
+    const keep = tLeft, run = !!timerInt; go(cur); restoreTimer(keep, run);
+    if (++n < total) setTimeout(step, 60 + n * 12); else tamshy("joy", "Кезек — " + S[gWho].name + "! 🙋"); })();
 }
 function gAnswer(k) {
   gAns = k; const ok = k === BOARD_Q[gq].a; state.board[gq] = ok; saveState();
+  if (ok && gWho !== null) { S[gWho].st = 1; saveS(); }
   sfx(ok); if (ok) confetti();
   const keep = tLeft, run = !!timerInt; go(cur); restoreTimer(keep, run);
 }
-function gNext() { const keep = tLeft, run = !!timerInt; if (gq < BOARD_Q.length - 1) { gq++; gAns = null; } go(cur); restoreTimer(keep, run); }
+function gNext() { const keep = tLeft, run = !!timerInt; if (gq < BOARD_Q.length - 1) { gq++; gAns = null; gWho = null; } go(cur); restoreTimer(keep, run); }
 function giveQuick(i, el) { S[i].st = 1; saveS(); el.classList.add("given"); el.textContent = "✓ " + S[i].name; el.disabled = true; }
 function restoreTimer(left, run) { const el = $("#timer"); if (!el) return; tLeft = left; el.querySelector(".t").textContent = fmt(left); if (run) tStart(); }
 function sfx(ok) { try { const c = new (window.AudioContext || window.webkitAudioContext)(); const o = c.createOscillator(); const g = c.createGain(); o.connect(g); g.connect(c.destination);
@@ -210,52 +236,52 @@ function rGroup() {
       <div class="card"><b>🏭 Шаруашылық маңызы</b><ul>${c.u.map(x => `<li class="ans">${x}</li>`).join("")}</ul></div>
       <div class="card"><b>✖ Артық карточкалар</b><ul>${c.x.map(x => `<li style="color:var(--bad);text-decoration:line-through">${x}</li>`).join("")}</ul></div></div>
       <div class="row" style="margin-top:12px"><span class="method" style="margin:0">Дескриптор: ${GROUP_TASK.descr}</span><button class="btn ok" onclick="giveGroup('${g.id}')">«${g.name}» тобына +1 балл</button></div></div>`; })();
-  return head(GROUP_TASK.title, GROUP_TASK.text) +
-    `<div class="row" style="margin-bottom:14px">${timerHTML(180)}<span style="font-weight:700">Жауабын ашу:</span>
+  return head(GROUP_TASK.title, GROUP_TASK.text + " Тексеру: топтар бір-бірінің парағын тексереді, сосын мұғалім.") +
+    `<div class="row" style="margin-bottom:14px">${timerHTML(180)}<span style="font-weight:700">Дескрипторды ашу:</span>
      ${GROUPS.map((g, k) => `<button class="btn" style="background:${g.color}" onclick="grTab=${k};go(cur)">${g.icon} ${g.name}</button>`).join("")}</div>${body}`;
 }
 function giveGroup(id) { S.forEach(s => { if (s.g === id) s.gr = 1; }); saveS(); confetti(); }
 
+// ===== Әр тапсырмадан кейінгі тексеру панелі (өзін-өзі → көршісі → мұғалім) =====
+let ckStep = {};
+function checkPanel(key, crit, answersHtml) {
+  const c = CRITERIA.find(x => x.id === crit); const st = ckStep[key] || 0;
+  const steps = ["1. 🙋 Өзін-өзі тексереді", "2. 🤝 Көршісімен алмасып тексереді", "3. 👩‍🏫 Мұғалім баллды қояды"];
+  const grid = `<div class="sgrid">${S.map((s, i) => `<div class="scell"><span class="dot" style="background:${G(s.g).color}"></span><b>${esc(s.name)}</b>
+     <div class="pick">${Array.from({ length: c.max + 1 }, (_, v) => `<button class="${(s[crit] || 0) === v ? "on" : ""}" onclick="setScore(${i},'${crit}',${v})">${v}</button>`).join("")}</div></div>`).join("")}</div>`;
+  return `<div class="ckbox"><div class="ckhead">✅ Тексеру · <span>${c.name}: 0–${c.max} балл</span> · <small>${c.d}</small></div>
+    <div class="steps">${steps.map((s, k) => `<div class="${k === st ? "on" : ""}" onclick="ckStep['${key}']=${k};go(cur)" style="cursor:pointer">${s}</div>`).join("")}</div>
+    ${st < 2 ? answersHtml : grid}</div>`;
+}
+
 // 6. Оқулықпен жұмыс
 function rBook() {
+  const ans = `<table><tr><th style="width:24%">Су түрі</th><th>Дескриптор: шаруашылықта пайдаланылуы</th><th style="width:10%">Балл</th></tr>
+    ${BOOK_TASK.rows.map(r => `<tr><td><b>${r[0]}</b></td><td class="ans">${r[1]}</td><td>1</td></tr>`).join("")}
+    <tr><td colspan="2" style="text-align:right"><b>Барлығы</b></td><td><b>3</b></td></tr></table>`;
   return head(BOOK_TASK.title, "Жауапты оқулықтан «детективтей» іздеп, дәптерге жазамыз. " + BOOK_TASK.descr) +
-    `<div class="row" style="margin-bottom:14px">${timerHTML(300)}<button class="btn ok" onclick="document.querySelectorAll('.ans').forEach(e=>e.classList.toggle('hidden'))">Дескрипторды ашу</button></div>
-    <div class="card" style="font-size:20px;margin-bottom:14px">${BOOK_TASK.text}</div>
-    <table><tr><th style="width:24%">Су түрі</th><th>Шаруашылықта пайдаланылуы</th><th style="width:10%">Балл</th></tr>
-    ${BOOK_TASK.rows.map(r => `<tr><td><b>${r[0]}</b></td><td><span class="ans hidden">${r[1]}</span></td><td>1</td></tr>`).join("")}
-    <tr><td colspan="2" style="text-align:right"><b>Барлығы</b></td><td><b>4</b></td></tr></table>`;
+    `<div class="row" style="margin-bottom:14px">${timerHTML(300)}<div class="card" style="font-size:19px;flex:1;padding:14px 18px">${BOOK_TASK.text}</div></div>
+    ${checkPanel("bk", "bk", ans)}`;
 }
 
 // 7. Жұмыс парақтары
+let wsVar = 0;
 function rWorksheet() {
-  window.onTimerEnd = () => { $("#wsEnd").classList.remove("hidden"); };
-  return head("Жұмыс парақтары", "Әр оқушыда әртүрлі нұсқа. 5 тапсырма — 5 балл. Уақыт біткенде қалам қойылады.") +
-    `<div style="text-align:center;margin:30px 0">${timerHTML(420).replace('class="timer"', 'class="timer" style="transform:scale(1.8);transform-origin:center"')}</div>
-    <div class="grid5">${WORKSHEETS.map(w => `<div class="card" style="text-align:center"><div style="font-size:40px">📄</div><b>${w.n}-нұсқа</b><div class="sub" style="margin:4px 0 0">5 тапсырма</div></div>`).join("")}</div>
-    <div id="wsEnd" class="reveal hidden" style="text-align:center;font-size:26px">⏰ Уақыт бітті! Қаламдарды қойыңдар → <b>Тексеру</b></div>`;
+  const w = WORKSHEETS[wsVar];
+  const ans = `<div class="tabs">${WORKSHEETS.map((x, k) => `<button class="${k === wsVar ? "on" : ""}" style="background:var(--blue)" onclick="wsVar=${k};go(cur)">${x.n}-нұсқа</button>`).join("")}</div>
+    <table><tr><th style="width:5%">№</th><th style="width:42%">Тапсырма</th><th>Дескриптор (дұрыс жауап)</th><th style="width:7%">Балл</th></tr>
+    ${w.tasks.map((t, i) => `<tr><td>${i + 1}</td><td>${t[0]}</td><td class="ans">${t[1]}</td><td>1</td></tr>`).join("")}</table>`;
+  return head("Жұмыс парақтары", "Әр оқушыда әртүрлі нұсқа. 5 тапсырма — 5 балл. Уақыт біткенде қалам қойылады да, бірден тексереміз.") +
+    `<div class="row" style="margin-bottom:14px">${timerHTML(420)}</div>${checkPanel("ws", "ws", ans)}`;
 }
 
-// 8. Тексеру + бағалау
-let chkStep = 0, chkVar = 0;
-function rCheck() {
-  const steps = ["1. Өзін-өзі тексеру", "2. Көршісімен алмасып тексеру", "3. Мұғалім баллды қояды"];
-  const w = WORKSHEETS[chkVar];
-  const answers = `<div class="tabs">${WORKSHEETS.map((x, k) => `<button class="${k === chkVar ? "on" : ""}" style="background:var(--blue)" onclick="chkVar=${k};go(cur)">${x.n}-нұсқа</button>`).join("")}</div>
-    <table><tr><th style="width:5%">№</th><th style="width:42%">Тапсырма</th><th>Дұрыс жауап (дескриптор)</th><th style="width:7%">Балл</th></tr>
-    ${w.tasks.map((t, i) => `<tr><td>${i + 1}</td><td>${t[0]}</td><td class="ans">${t[1]}</td><td>1</td></tr>`).join("")}</table>`;
-  const table = `<table class="score"><tr><th>№</th><th>Оқушы</th>${CRITERIA.map(c => `<th>${c.name}<br><small style="font-weight:400;color:var(--muted)">${c.d} · 0–${c.max}</small></th>`).join("")}<th>Барлығы</th></tr>
-    ${S.map((s, i) => `<tr><td>${i + 1}</td><td><span class="dot" style="background:${G(s.g).color}"></span>${esc(s.name)}</td>
-      ${CRITERIA.map(c => `<td><div class="pick">${Array.from({ length: c.max + 1 }, (_, v) => `<button class="${(s[c.id] || 0) === v ? "on" : ""}" onclick="setScore(${i},'${c.id}',${v})">${v}</button>`).join("")}</div></td>`).join("")}
-      <td class="total" id="tot${i}">${total(s)}</td></tr>`).join("")}</table>`;
-  return head("Тексеру және бағалау", "Тақтада жауаптар ашылады → өзін-өзі тексереді → көршісімен алмасады → мұғалім критерий бойынша балл қояды.") +
-    `<div class="steps">${steps.map((s, k) => `<div class="${k === chkStep ? "on" : ""}" onclick="chkStep=${k};go(cur)" style="cursor:pointer">${s}</div>`).join("")}</div>
-    ${chkStep < 2 ? answers : table}`;
-}
+// бұрынғы жалпы тексеру беті (енді қолданылмайды)
+function rCheck() { return ""; }
 function setScore(i, c, v) {
   S[i][c] = v; saveS();
   const btns = event.target.parentNode.querySelectorAll("button");
   btns.forEach((b, k) => b.classList.toggle("on", k === v));
-  $("#tot" + i).textContent = total(S[i]);
+  const tt = $("#tot" + i); if (tt) tt.textContent = total(S[i]);
 }
 
 // 9. Рейтинг
@@ -372,5 +398,5 @@ function inlineDiagrams() {
     fetch(u).then(r => r.ok ? r.text() : Promise.reject()).then(s => { _svgCache[u] = s; put(s); }).catch(() => {});
   });
 }
-const _go2 = go; go = function (i) { _go2(i); inlineDiagrams(); };
+const _go2 = go; go = function (i) { _go2(i); inlineDiagrams(); if (state.goalsShown) renderMemo(); };
 go(cur);

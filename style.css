@@ -241,3 +241,28 @@ main{padding-top:16px}
 .diag .flow{animation:dash 1s linear infinite}
 @keyframes dash{to{stroke-dashoffset:-24}}
 .spkimg{grid-template-columns:55% 1fr}
+
+.ckbox{background:rgba(255,255,255,.88);border-radius:22px;padding:16px 18px;box-shadow:0 10px 26px rgba(0,50,100,.12)}
+.ckhead{font-size:20px;font-weight:800;color:var(--ok);margin-bottom:6px}.ckhead span{color:var(--blue2)}.ckhead small{font-weight:600;color:var(--muted);font-size:14px}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.scell{background:#fff;border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 8px rgba(20,70,140,.08);font-size:14.5px}
+.scell .pick button{width:30px;height:30px;font-size:14px}
+
+.g3{display:grid;grid-template-columns:1.05fr 1.5fr .75fr;gap:14px;align-items:start}
+.gmodel{background:rgba(255,255,255,.9);border-radius:20px;overflow:hidden;box-shadow:0 10px 26px rgba(0,50,100,.15)}
+.gmh{color:#fff;font-weight:800;padding:8px 14px;font-size:16px}
+.gmodel .dwrap{border-radius:0;box-shadow:none}
+.g3 .gq{font-size:27px}.g3 .gcard{padding:18px 20px}
+.g3 .gopts{grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.g3 .gopt{font-size:20px;padding:14px 14px}
+.gdesc{background:rgba(255,255,255,.92);border-radius:20px;padding:14px 16px;box-shadow:0 10px 26px rgba(0,50,100,.12);font-size:15.5px}
+.gdh{font-weight:800;color:var(--blue2);font-size:16px}
+.gdesc ul{margin:6px 0;padding-left:18px;line-height:1.5}
+.gball{background:linear-gradient(135deg,#ffe9a8,#ffd23f);border-radius:12px;padding:8px 10px;font-weight:700;text-align:center}
+.gdone{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.gdone span{background:var(--c);color:#fff;border-radius:10px;padding:2px 8px;font-size:12.5px;font-weight:700}
+.gwho{background:#fff;border:3px solid var(--c);border-radius:14px;padding:8px 14px;font-size:19px;animation:pop .3s}
+.gdots .gdot{width:32px;height:32px;font-size:13px}
+.mg{font-size:22px;line-height:1.6;margin:4px 0}
+.mw{transition:.3s}.mw.gone{color:#9fb3c8;letter-spacing:1px}
+.mstep{font-weight:800;color:var(--blue2);font-size:18px}
+.scell{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:4px}
+.scell .pick{grid-column:1/-1}
