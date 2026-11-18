@@ -66,7 +66,7 @@ WORKSHEETS.forEach(w=>{h+=`<div class="page ws-page"><div class="ws-banner"><div
 <div class="ws-meta"><div>👤 Аты-жөні: <span class="ws-l"></span></div><div>⏱ 6 минут</div><div>⭐ 5 балл</div></div><div style="font-size:10pt;color:#456;margin:-2mm 0 3mm">«2 мысал» сұралса — екеуі де дұрыс болғанда 1 балл.</div>
 ${w.tasks.map((t,i)=>`<div class="ws-task"><div class="ws-n">${i+1}</div>${wsPic(t[0])}<div class="ws-b"><div class="ws-q">${WS_IC[i]} ${t[0]}</div><div class="ws-a"></div><div class="ws-a"></div></div><div class="ws-p">☐ 1 б.</div></div>`).join("")}
 <div class="ws-foot"><div>Тексерген: ☐ өзім &nbsp; ☐ көршім &nbsp; ☐ мұғалім</div><div class="ws-sum">Барлығы: ____ / 5</div></div>
-<div class="ws-self">Сабақтағы көңіл-күйім: 🌊 ағып барамын &nbsp; 🏞️ ойланып тұрмын &nbsp; 🟫 тұрып қалдым</div></div>`});
+<div class="ws-self">Менің тамшым: 🌊 өзендей ағып тұрмын &nbsp; 🏞️ көлдей толқып тұрмын &nbsp; 🌾 батпақта тұрып қалдым</div></div>`});
 // 3б. Топтық тапсырма: конверт карточкалары + жапсыру парағы
 GROUPS.forEach(g=>{const c=GROUP_TASK.cards[g.id];const all=[...c.f,...c.u,...c.x].sort((a,b)=>a.length%3-b.length%3);
 h+=`<div class="page"><div class="ws-banner" style="height:28mm"><div><div class="ws-t" style="font-size:22pt">✉️ Конвертте не бар? — «${g.name}» тобы</div><div class="ws-s">Қиып алып, конвертке салыңыз</div></div></div>
