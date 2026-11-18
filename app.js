@@ -146,14 +146,14 @@ function ytEmbed(u) {
   return m ? `https://www.youtube.com/embed/${m[1]}` : u;
 }
 function rVideo() {
-  const v = state.video || "kurlyk_sulary.mp4";
+  const v = state.video || (state.fullVideo ? "kurlyk_sulary.mp4" : "kurlyk_sulary_qysqa.mp4");
   const player = v ? (/\.(mp4|webm)$/i.test(v) ? `<video src="${esc(v)}" controls></video>` : `<iframe src="${esc(ytEmbed(v))}" allowfullscreen></iframe>`)
     : `<div>Видео сілтемесін төменге қойыңыз</div>`;
   return head("Бейнежазба және түсіндіру", "Видеоны көреміз → әр топ: «Не көрдім? Не білемін? Не сұраймын?» → сұрақтарға жауап береміз.") +
     `<div class="grid3" style="grid-template-columns:3fr 2fr">
       <div><div class="video">${player}</div>
         <div class="row" style="margin-top:10px"><input id="vurl" placeholder="Басқа видео қойғыңыз келсе — YouTube сілтемесі" value="${esc(state.video)}" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);font-size:15px">
-        <button class="btn ghost" onclick="state.video=$('#vurl').value.trim();saveState();go(cur)">Қою</button></div></div>
+        <button class="btn ghost" onclick="state.video=$('#vurl').value.trim();saveState();go(cur)">Қою</button><button class="btn ghost" onclick="state.video='';state.fullVideo=!state.fullVideo;saveState();go(cur)">${state.fullVideo ? "Қысқа нұсқа (2,5 мин)" : "Толық нұсқа (4,5 мин)"}</button></div></div>
       <div class="card"><h3 style="margin-top:0">❓ Сұрақтар</h3>
         ${VIDEO_Q.map((q, i) => `<div class="qa"><b>${i + 1}.</b> ${q.q}
           <div class="row" style="margin-top:6px"><button class="btn ghost" style="padding:5px 10px;font-size:14px" onclick="this.parentNode.nextElementSibling.classList.toggle('hidden')">Жауабы</button>
@@ -178,8 +178,8 @@ function rBoard() {
       <div class="verdict">${gAns === q.a ? (gWho !== null ? `✅ Дұрыс! ${esc(S[gWho].name)} +1 балл` : "✅ Дұрыс! +1 балл") : "❌ Қате! Дұрыс жауабы жасылмен белгіленді"}</div>
       ${gAns === q.a && gWho === null ? `<div class="who-chips"><span>Кім жауап берді?</span>${S.map((s, i) => s.st ? "" : `<button style="--c:${G(s.g).color}" onclick="giveQuick(${i},this)">${esc(s.name)}</button>`).join("")}</div>` : ""}
       <button class="btn" onclick="gNext()">${gq < BOARD_Q.length - 1 ? "Келесі сұрақ →" : "Ойын аяқталды 🎉"}</button></div>`;
-  return head("Тақта ойыны: 15 сұрақ", "🎲 оқушыны кездейсоқ таңдайды → оқушы тақтада жауапты басады → бірден белгіленеді. Осы уақытта 5 спикер дайындалады.") +
-    `<div class="row" style="justify-content:space-between;margin-bottom:10px">${timerHTML(480)}<div class="gdots">${dots}</div><div class="gscore">✅ ${right} / ${BOARD_Q.length}</div></div>
+  return head("Тақта ойыны: 15 сұрақ", "🎲 оқушыны таңдайды → әр сұраққа 25 секунд → оқушы тақтада жауапты басады → бірден белгіленеді. Осы уақытта 5 спикер дайындалады.") +
+    `<div class="row" style="justify-content:space-between;margin-bottom:10px">${timerHTML(25)}<div class="gdots">${dots}</div><div class="gscore">✅ ${right} / ${BOARD_Q.length}</div></div>
     <div class="g3">
       <div class="gmodel"><div class="gmh" style="background:${g.color}">${g.icon} Макет: ${g.name}</div><div class="dwrap" data-d="img/d_${g.id}.svg"><img src="img/d_${g.id}.svg" alt=""></div></div>
       <div><div class="gcard"><div class="gnum">${gq + 1}-сұрақ · оқулық ${q.p}-бет</div><div class="gq">${q.q}</div></div>
@@ -196,15 +196,15 @@ function pickWho() {
   let n = 0; const total = 14;
   (function step() { gWho = pool[Math.floor(Math.random() * pool.length)]; const el = document.querySelector(".gwho") ;
     const keep = tLeft, run = !!timerInt; go(cur); restoreTimer(keep, run);
-    if (++n < total) setTimeout(step, 60 + n * 12); else tamshy("joy", "Кезек — " + S[gWho].name + "! 🙋"); })();
+    if (++n < total) setTimeout(step, 60 + n * 12); else { tamshy("joy", "Кезек — " + S[gWho].name + "! 🙋"); tReset(); tStart(); } })();
 }
 function gAnswer(k) {
-  gAns = k; const ok = k === BOARD_Q[gq].a; state.board[gq] = ok; saveState();
+  tPause(); gAns = k; const ok = k === BOARD_Q[gq].a; state.board[gq] = ok; saveState();
   if (ok && gWho !== null) { S[gWho].st = 1; saveS(); }
   sfx(ok); if (ok) confetti();
   const keep = tLeft, run = !!timerInt; go(cur); restoreTimer(keep, run);
 }
-function gNext() { const keep = tLeft, run = !!timerInt; if (gq < BOARD_Q.length - 1) { gq++; gAns = null; gWho = null; } go(cur); restoreTimer(keep, run); }
+function gNext() { if (gq < BOARD_Q.length - 1) { gq++; gAns = null; gWho = null; } go(cur); }
 function giveQuick(i, el) { S[i].st = 1; saveS(); el.classList.add("given"); el.textContent = "✓ " + S[i].name; el.disabled = true; }
 function restoreTimer(left, run) { const el = $("#timer"); if (!el) return; tLeft = left; el.querySelector(".t").textContent = fmt(left); if (run) tStart(); }
 function sfx(ok) { try { const c = new (window.AudioContext || window.webkitAudioContext)(); const o = c.createOscillator(); const g = c.createGain(); o.connect(g); g.connect(c.destination);
@@ -214,7 +214,7 @@ function sfx(ok) { try { const c = new (window.AudioContext || window.webkitAudi
 let spkTab = 0, spkView = "d";
 function rSpeakers() {
   const g = GROUPS[spkTab]; const sp = SPEAKERS[g.id];
-  return head("Спикерлер сыныпқа түсіндіреді", "Спикер өз суын жоспар бойынша түсіндіреді. Сынып тыңдап, 1 сұрақ қояды.") +
+  return head("Спикерлер сыныпқа түсіндіреді", "Әр спикер өз суын жоспар бойынша 1 минутта түсіндіреді.") +
     `<div class="tabs">${GROUPS.map((x, k) => `<button class="${k === spkTab ? "on" : ""}" style="background:${x.color};color:#fff" onclick="spkTab=${k};go(cur)">${x.icon} ${x.name}</button>`).join("")}</div>
     <div class="spk spkimg" style="background:${g.light};border:2px solid ${g.color}">
       <div><div class="vtabs"><button class="${spkView === "d" ? "on" : ""}" onclick="spkView='d';go(cur)">📐 Сызба</button><button class="${spkView === "p" ? "on" : ""}" onclick="spkView='p';go(cur)">📷 Сурет</button></div>
@@ -260,7 +260,7 @@ function rBook() {
     ${BOOK_TASK.rows.map(r => `<tr><td><b>${r[0]}</b></td><td class="ans">${r[1]}</td><td>1</td></tr>`).join("")}
     <tr><td colspan="2" style="text-align:right"><b>Барлығы</b></td><td><b>3</b></td></tr></table>`;
   return head(BOOK_TASK.title, "Жауапты оқулықтан «детективтей» іздеп, дәптерге жазамыз. " + BOOK_TASK.descr) +
-    `<div class="row" style="margin-bottom:14px">${timerHTML(300)}<div class="card" style="font-size:19px;flex:1;padding:14px 18px">${BOOK_TASK.text}</div></div>
+    `<div class="row" style="margin-bottom:14px">${timerHTML(180)}<div class="card" style="font-size:19px;flex:1;padding:14px 18px">${BOOK_TASK.text}</div></div>
     ${checkPanel("bk", "bk", ans)}`;
 }
 
@@ -272,7 +272,7 @@ function rWorksheet() {
     <table><tr><th style="width:5%">№</th><th style="width:42%">Тапсырма</th><th>Дескриптор (дұрыс жауап)</th><th style="width:7%">Балл</th></tr>
     ${w.tasks.map((t, i) => `<tr><td>${i + 1}</td><td>${t[0]}</td><td class="ans">${t[1]}</td><td>1</td></tr>`).join("")}</table>`;
   return head("Жұмыс парақтары", "Әр оқушыда әртүрлі нұсқа. 5 тапсырма — 5 балл. Уақыт біткенде қалам қойылады да, бірден тексереміз.") +
-    `<div class="row" style="margin-bottom:14px">${timerHTML(420)}</div>${checkPanel("ws", "ws", ans)}`;
+    `<div class="row" style="margin-bottom:14px">${timerHTML(360)}</div>${checkPanel("ws", "ws", ans)}`;
 }
 
 // бұрынғы жалпы тексеру беті (енді қолданылмайды)

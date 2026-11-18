@@ -54,7 +54,7 @@ h+=`<div class="page"><h2>Дәйексөз карточкаларының жау
 <p class="small">Парталарға топ атаулары жазылған тақтайшалар қойылады: Өзен (5), Көл (5), Мұздық (5), Батпақ (4), Жерасты суы (4).</p></div>`;
 // 2. Спикерлердің дайындық парақтары
 GROUPS.forEach(g=>{const s=SPEAKERS[g.id];h+=`<div class="page"><div class="ws-banner" style="height:34mm;background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,.05)),url(${g.img}) center/cover"><div><div class="ws-k">Спикердің дайындық парағы</div><div class="ws-t">${g.icon} ${g.name}</div></div></div>
-<p class="small">Оқулық: ${s.pages}-беттер. Бос орындарды толтырып, сыныпқа 1,5 минутта түсіндір. Соңында сыныпқа 1 сұрақ қой.</p>
+<p class="small">Оқулық: ${s.pages}-беттер. Бос орындарды толтырып, сыныпқа 1 минутта түсіндір.</p>
 <div class="name">Спикер: ______________________________</div>
 <table><tr><th style="width:28%">Жоспар</th><th>Толтыр</th></tr>${s.plan.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}<div class="line"></div></td></tr>`).join("")}
 <tr><td><b>Сыныпқа сұрағым</b></td><td><div class="line"></div><div class="line"></div></td></tr></table></div>`});
@@ -63,7 +63,7 @@ function wsType(q){q=q.toLowerCase();if(/жерасты|бұлақ|гейзер|
 function wsPic(q){const g=wsType(q);const d=/қалай|түзіл|түр|пайда|жікте|себеб|дегеніміз/.test(q.toLowerCase());return `<img class="ws-img" src="img/${d?"d_"+g+".svg":g+".jpg"}">`}
 const WS_IC=["🧭","💧","🏔️","🏞️","🌱"];
 WORKSHEETS.forEach(w=>{h+=`<div class="page ws-page"><div class="ws-banner"><div><div class="ws-k">8 сынып · География · §26–27</div><div class="ws-t">Құрлық сулары</div><div class="ws-s">Жұмыс парағы</div></div><div class="ws-v">${w.n}<small>нұсқа</small></div></div>
-<div class="ws-meta"><div>👤 Аты-жөні: <span class="ws-l"></span></div><div>⏱ 7 минут</div><div>⭐ 5 балл</div></div>
+<div class="ws-meta"><div>👤 Аты-жөні: <span class="ws-l"></span></div><div>⏱ 6 минут</div><div>⭐ 5 балл</div></div>
 ${w.tasks.map((t,i)=>`<div class="ws-task"><div class="ws-n">${i+1}</div>${wsPic(t[0])}<div class="ws-b"><div class="ws-q">${WS_IC[i]} ${t[0]}</div><div class="ws-a"></div><div class="ws-a"></div></div><div class="ws-p">☐ 1 б.</div></div>`).join("")}
 <div class="ws-foot"><div>Тексерген: ☐ өзім &nbsp; ☐ көршім &nbsp; ☐ мұғалім</div><div class="ws-sum">Барлығы: ____ / 5</div></div>
 <div class="ws-self">Сабақтағы көңіл-күйім: 🌊 ағып барамын &nbsp; 🏞️ ойланып тұрмын &nbsp; 🟫 тұрып қалдым</div></div>`});
