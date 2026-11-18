@@ -63,7 +63,7 @@ function wsType(q){q=q.toLowerCase();if(/жерасты|бұлақ|гейзер|
 function wsPic(q){const g=wsType(q);const d=/қалай|түзіл|түр|пайда|жікте|себеб|дегеніміз/.test(q.toLowerCase());return `<img class="ws-img" src="img/${d?"d_"+g+".svg":g+".jpg"}">`}
 const WS_IC=["🧭","💧","🏔️","🏞️","🌱"];
 WORKSHEETS.forEach(w=>{h+=`<div class="page ws-page"><div class="ws-banner"><div><div class="ws-k">8 сынып · География · §26–27</div><div class="ws-t">Құрлық сулары</div><div class="ws-s">Жұмыс парағы</div></div><div class="ws-v">${w.n}<small>нұсқа</small></div></div>
-<div class="ws-meta"><div>👤 Аты-жөні: <span class="ws-l"></span></div><div>⏱ 6 минут</div><div>⭐ 5 балл</div></div>
+<div class="ws-meta"><div>👤 Аты-жөні: <span class="ws-l"></span></div><div>⏱ 6 минут</div><div>⭐ 5 балл</div></div><div style="font-size:10pt;color:#456;margin:-2mm 0 3mm">«2 мысал» сұралса — екеуі де дұрыс болғанда 1 балл.</div>
 ${w.tasks.map((t,i)=>`<div class="ws-task"><div class="ws-n">${i+1}</div>${wsPic(t[0])}<div class="ws-b"><div class="ws-q">${WS_IC[i]} ${t[0]}</div><div class="ws-a"></div><div class="ws-a"></div></div><div class="ws-p">☐ 1 б.</div></div>`).join("")}
 <div class="ws-foot"><div>Тексерген: ☐ өзім &nbsp; ☐ көршім &nbsp; ☐ мұғалім</div><div class="ws-sum">Барлығы: ____ / 5</div></div>
 <div class="ws-self">Сабақтағы көңіл-күйім: 🌊 ағып барамын &nbsp; 🏞️ ойланып тұрмын &nbsp; 🟫 тұрып қалдым</div></div>`});
