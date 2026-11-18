@@ -216,3 +216,8 @@ main{padding-top:16px}
 .tamshy.bigt{left:auto;right:60px}
 .tamshy .say{right:auto;left:100%;margin-left:8px;margin-right:0;border-radius:16px 16px 16px 4px;transform-origin:left bottom}
 .tamshy.bigt .say{left:auto;right:100%;margin-right:8px;border-radius:16px 16px 4px 16px;transform-origin:right bottom}
+.bigtopic{font-size:36px}
+.title-page{padding-top:18px}
+.title-page .hello{font-size:60px}
+.tamshy.bigt .say{display:none}
+.tamshy.bigt{bottom:90px;right:30px;width:120px}
