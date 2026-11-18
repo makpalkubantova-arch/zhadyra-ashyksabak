@@ -35,6 +35,7 @@ td,th{border:1px solid #333;padding:6px 8px;vertical-align:top;text-align:left}
 .ws-self{margin-top:4mm;text-align:center;font-size:11pt;background:#eef6ff;border-radius:4mm;padding:3mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .cut{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:6mm}.cutc{border:2px dashed;border-radius:3mm;height:28mm;display:flex;align-items:center;justify-content:center;text-align:center;padding:3mm;font-family:Arial,sans-serif;font-size:13pt;font-weight:600}
 .stick{display:grid;grid-template-columns:1fr 1fr;gap:5mm}.stick div{border:2px solid #333;border-radius:4mm;height:95mm;padding:4mm;font-family:Arial,sans-serif;font-size:14pt}
+.ws-img{flex:none;width:34mm;height:23mm;object-fit:cover;border-radius:3mm;border:1px solid #bcd6f2}
 @media print{body{background:#fff}.bar{display:none}.page{margin:0;width:auto;min-height:auto}}
 </style>
 </head>
@@ -58,10 +59,12 @@ GROUPS.forEach(g=>{const s=SPEAKERS[g.id];h+=`<div class="page"><div class="ws-b
 <table><tr><th style="width:28%">Жоспар</th><th>Толтыр</th></tr>${s.plan.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}<div class="line"></div></td></tr>`).join("")}
 <tr><td><b>Сыныпқа сұрағым</b></td><td><div class="line"></div><div class="line"></div></td></tr></table></div>`});
 // 3. Жұмыс парақтары — әдемі дизайн
+function wsType(q){q=q.toLowerCase();if(/жерасты|бұлақ|гейзер|минерал|артезиан/.test(q))return"zherasty";if(/батпақ|шымтезек|васюган/.test(q))return"batpak";if(/мұздық|қар сызығы/.test(q))return"muzdyk";if(/көл|байкал|каспий/.test(q))return"kol";if(/өзен|еңістіг/.test(q)&&!/жерасты/.test(q))return"ozen";return"zherasty"}
+function wsPic(q){const g=wsType(q);const d=/қалай|түзіл|түр|пайда|жікте|себеб|дегеніміз/.test(q.toLowerCase());return `<img class="ws-img" src="img/${d?"d_"+g+".svg":g+".jpg"}">`}
 const WS_IC=["🧭","💧","🏔️","🏞️","🌱"];
 WORKSHEETS.forEach(w=>{h+=`<div class="page ws-page"><div class="ws-banner"><div><div class="ws-k">8 сынып · География · §26–27</div><div class="ws-t">Құрлық сулары</div><div class="ws-s">Жұмыс парағы</div></div><div class="ws-v">${w.n}<small>нұсқа</small></div></div>
 <div class="ws-meta"><div>👤 Аты-жөні: <span class="ws-l"></span></div><div>⏱ 7 минут</div><div>⭐ 5 балл</div></div>
-${w.tasks.map((t,i)=>`<div class="ws-task"><div class="ws-n">${i+1}</div><div class="ws-b"><div class="ws-q">${WS_IC[i]} ${t[0]}</div><div class="ws-a"></div><div class="ws-a"></div></div><div class="ws-p">☐ 1 б.</div></div>`).join("")}
+${w.tasks.map((t,i)=>`<div class="ws-task"><div class="ws-n">${i+1}</div>${wsPic(t[0])}<div class="ws-b"><div class="ws-q">${WS_IC[i]} ${t[0]}</div><div class="ws-a"></div><div class="ws-a"></div></div><div class="ws-p">☐ 1 б.</div></div>`).join("")}
 <div class="ws-foot"><div>Тексерген: ☐ өзім &nbsp; ☐ көршім &nbsp; ☐ мұғалім</div><div class="ws-sum">Барлығы: ____ / 5</div></div>
 <div class="ws-self">Сабақтағы көңіл-күйім: 🌊 ағып барамын &nbsp; 🏞️ ойланып тұрмын &nbsp; 🟫 тұрып қалдым</div></div>`});
 // 3б. Топтық тапсырма: конверт карточкалары + жапсыру парағы

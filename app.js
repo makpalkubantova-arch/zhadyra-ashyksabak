@@ -185,13 +185,14 @@ function sfx(ok) { try { const c = new (window.AudioContext || window.webkitAudi
   const f = ok ? [523, 659, 784] : [300, 220]; f.forEach((v, i) => o.frequency.setValueAtTime(v, c.currentTime + i * 0.12)); g.gain.value = 0.15; o.start(); o.stop(c.currentTime + f.length * 0.12 + 0.1); } catch (e) {} }
 
 // 5. Спикерлер
-let spkTab = 0;
+let spkTab = 0, spkView = "d";
 function rSpeakers() {
   const g = GROUPS[spkTab]; const sp = SPEAKERS[g.id];
   return head("Спикерлер сыныпқа түсіндіреді", "Спикер өз суын жоспар бойынша түсіндіреді. Сынып тыңдап, 1 сұрақ қояды.") +
     `<div class="tabs">${GROUPS.map((x, k) => `<button class="${k === spkTab ? "on" : ""}" style="background:${x.color};color:#fff" onclick="spkTab=${k};go(cur)">${x.icon} ${x.name}</button>`).join("")}</div>
     <div class="spk spkimg" style="background:${g.light};border:2px solid ${g.color}">
-      <div class="pic" style="background-image:url(${g.img})"></div><div>
+      <div><div class="vtabs"><button class="${spkView === "d" ? "on" : ""}" onclick="spkView='d';go(cur)">📐 Сызба</button><button class="${spkView === "p" ? "on" : ""}" onclick="spkView='p';go(cur)">📷 Сурет</button></div>
+      ${spkView === "p" ? `<div class="pic" style="background-image:url(${g.img})"></div>` : `<div class="dwrap" data-d="img/d_${g.id}.svg"><img src="img/d_${g.id}.svg" alt=""></div>`}</div><div>
       <h2 style="color:${g.color}">${g.icon} ${g.name}</h2>
       <ol>${sp.plan.map(p => `<li><b>${p[0]}</b></li>`).join("")}</ol>
       <div class="sub">Оқулық: ${sp.pages}-беттер</div>
@@ -360,3 +361,16 @@ function spinRand() {
   })();
 }
 $("#btnRand").onclick = openRand;
+
+// сызбаны анимациясымен кірістіру
+const _svgCache = {};
+function inlineDiagrams() {
+  document.querySelectorAll(".dwrap[data-d]").forEach(w => {
+    const u = w.dataset.d;
+    const put = s => { w.innerHTML = s; w.removeAttribute("data-d"); };
+    if (_svgCache[u]) return put(_svgCache[u]);
+    fetch(u).then(r => r.ok ? r.text() : Promise.reject()).then(s => { _svgCache[u] = s; put(s); }).catch(() => {});
+  });
+}
+const _go2 = go; go = function (i) { _go2(i); inlineDiagrams(); };
+go(cur);
