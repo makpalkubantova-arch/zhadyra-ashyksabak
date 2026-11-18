@@ -9,12 +9,12 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;",
 
 function defaultStudents() {
   const list = []; let n = 1;
-  GROUPS.forEach(g => { for (let i = 0; i < g.count; i++) list.push({ name: n++ + "-оқушы", g: g.id, st: 0, bk: 0, ws: 0 }); });
+  GROUPS.forEach(g => { for (let i = 0; i < g.count; i++) list.push({ name: n++ + "-оқушы", g: g.id, st: 0, gr: 0, bk: 0, ws: 0 }); });
   return list;
 }
 let S = store.get("students", null) || defaultStudents();
 const saveS = () => store.set("students", S);
-const total = s => (s.st || 0) + (s.bk || 0) + (s.ws || 0);
+const total = s => (s.st || 0) + (s.gr || 0) + (s.bk || 0) + (s.ws || 0);
 
 let state = store.get("state", { intro: [], board: {}, fb: [[0, 0, 0], [0, 0, 0]], video: "" });
 const saveState = () => store.set("state", state);
@@ -59,8 +59,9 @@ const STAGES = [
   { t: "Басы", min: "0,5 мин", r: rTitle, m: "Ұйымдастыру" },
   { t: "Дәйексөз", min: "4,5 мин", r: rIntro, m: "Әдіс: «Дәйексөз — менің тобым»" },
   { t: "Бейне", min: "5 мин", r: rVideo, m: "Әдіс: «Көрдім — Білдім — Сұраймын»" },
-  { t: "Тақта + спикер", min: "8 мин", r: rBoard, m: "Әдіс: «Кезекпен тақтаға» + «Спикерлер алаңы»" },
+  { t: "Тақта ойыны", min: "8 мин", r: rBoard, m: "Әдіс: «Су ойыны» — сұрақ-жауап + спикерлер дайындығы" },
   { t: "Спикерлер", min: "7 мин", r: rSpeakers, m: "Әдіс: «Спикерлер алаңы» (оқушы оқушыға түсіндіреді)" },
+  { t: "Топтық", min: "3 мин", r: rGroup, m: "Әдіс: «Конвертте не бар?»" },
   { t: "Оқулық", min: "5 мин", r: rBook, m: "Әдіс: «Детектив» (оқулықтан іздеу)" },
   { t: "Жұмыс парағы", min: "7 мин", r: rWorksheet, m: "Әдіс: «Таймермен жеке жұмыс» (саралап оқыту, 5 нұсқа)" },
   { t: "Тексеру", min: "5 мин", r: rCheck, m: "Әдіс: «Үш сүзгі» — өзін-өзі, өзара, мұғалім" },
@@ -97,7 +98,7 @@ function rTitle() {
     <div class="hello">👋</div>
     <h1>Сәлеметсіздер ме, балалар!</h1>
     <div class="bigtopic">${LESSON.topic.replace(". ", ".<br>")}</div>
-    <div class="groups-strip">${GROUPS.map(g => `<span class="gchip" style="background:${g.color}">${g.icon} ${g.name}</span>`).join("")}</div>
+    <div class="tgoals"><div><b>🎯 1-мақсат</b>${LESSON.goals[0]}</div><div><b>🎯 2-мақсат</b>${LESSON.goals[1]}</div></div>
   </div>`;
 }
 
@@ -140,12 +141,12 @@ function rVideo() {
   const v = state.video || "kurlyk_sulary.mp4";
   const player = v ? (/\.(mp4|webm)$/i.test(v) ? `<video src="${esc(v)}" controls></video>` : `<iframe src="${esc(ytEmbed(v))}" allowfullscreen></iframe>`)
     : `<div>Видео сілтемесін төменге қойыңыз</div>`;
-  return head("Бейнежазба және түсіндіру", "Видеоны көреміз → әр топ: «Не көрдім? Не білемін? Не сұраймын?» → мұғалімнің сұрақтары.") +
+  return head("Бейнежазба және түсіндіру", "Видеоны көреміз → әр топ: «Не көрдім? Не білемін? Не сұраймын?» → сұрақтарға жауап береміз.") +
     `<div class="grid3" style="grid-template-columns:3fr 2fr">
       <div><div class="video">${player}</div>
         <div class="row" style="margin-top:10px"><input id="vurl" placeholder="Басқа видео қойғыңыз келсе — YouTube сілтемесі" value="${esc(state.video)}" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);font-size:15px">
         <button class="btn ghost" onclick="state.video=$('#vurl').value.trim();saveState();go(cur)">Қою</button></div></div>
-      <div class="card"><h3 style="margin-top:0">Мұғалімнің сұрақтары</h3>
+      <div class="card"><h3 style="margin-top:0">❓ Сұрақтар</h3>
         ${VIDEO_Q.map((q, i) => `<div class="qa"><b>${i + 1}.</b> ${q.q}
           <div class="row" style="margin-top:6px"><button class="btn ghost" style="padding:5px 10px;font-size:14px" onclick="this.parentNode.nextElementSibling.classList.toggle('hidden')">Жауабы</button>
           <button class="btn ok" style="padding:5px 10px;font-size:14px" onclick="award()">+1 балл</button></div>
@@ -153,28 +154,35 @@ function rVideo() {
       </div></div>`;
 }
 
-// 4. Тақтадағы 15 сұрақ (спикерлер дайындалып жатқанда)
+// 4. Тақта ойыны — 15 сұрақ, жауап бірден белгіленеді
+let gq = 0, gAns = null;
+const SHAPES = [["▲", "#e2483d"], ["◆", "#1e6fd9"], ["●", "#f2a900"], ["■", "#14a46c"]];
 function rBoard() {
-  const b = state.board;
-  return head("Тақтадағы 15 сұрақ", "5 спикер дайындық парағымен дайындалады. Қалғандары тақтаға кезекпен шығады: 1 сұрақ — 1 оқушы — 1 балл.") +
-    `<div class="row" style="margin-bottom:14px">${timerHTML(480)}</div>
-    <div class="tiles">${BOARD_Q.map((q, i) => `<button class="tile ${b[i] === true ? "ok" : b[i] === false ? "no" : ""}" onclick="openQ(${i})">${i + 1}</button>`).join("")}</div>`;
+  const b = state.board; const q = BOARD_Q[gq];
+  const right = Object.values(b).filter(v => v === true).length;
+  const dots = BOARD_Q.map((_, i) => `<span class="gdot ${i === gq ? "cur" : b[i] === true ? "ok" : b[i] === false ? "no" : ""}" onclick="gq=${i};gAns=null;go(cur)">${i + 1}</span>`).join("");
+  const opts = q.o.map((o, k) => { let cls = ""; if (gAns !== null) { if (k === q.a) cls = "right"; else if (k === gAns) cls = "wrong"; else cls = "dim"; }
+    return `<button class="gopt ${cls}" style="--c:${SHAPES[k][1]}" onclick="gAnswer(${k})" ${gAns !== null ? "disabled" : ""}><span class="sh">${SHAPES[k][0]}</span>${o}</button>`; }).join("");
+  const after = gAns === null ? "" : `<div class="gafter ${gAns === q.a ? "ok" : "no"}">
+      <div class="verdict">${gAns === q.a ? "✅ Дұрыс! +1 балл" : "❌ Қате! Дұрыс жауабы жасылмен белгіленді"}</div>
+      ${gAns === q.a ? `<div class="who-chips"><span>Кім жауап берді?</span>${S.map((s, i) => s.st ? "" : `<button style="--c:${G(s.g).color}" onclick="giveQuick(${i},this)">${esc(s.name)}</button>`).join("")}</div>` : ""}
+      <button class="btn" onclick="gNext()">${gq < BOARD_Q.length - 1 ? "Келесі сұрақ →" : "Ойын аяқталды 🎉"}</button></div>`;
+  return head("Тақта ойыны: 15 сұрақ", "Оқушы тақтаға шығып жауапты басады — бірден белгіленеді. Осы уақытта 5 спикер дайындалады.") +
+    `<div class="row" style="justify-content:space-between;margin-bottom:12px">${timerHTML(480)}<div class="gscore">✅ ${right} / ${BOARD_Q.length}</div></div>
+    <div class="gdots">${dots}</div>
+    <div class="gcard"><div class="gnum">${gq + 1}-сұрақ · оқулық ${q.p}-бет</div><div class="gq">${q.q}</div></div>
+    <div class="gopts">${opts}</div>${after}`;
 }
-function openQ(i) {
-  const q = BOARD_Q[i];
-  openModal(`<div class="sub">${i + 1}-сұрақ · оқулық ${q.p}-бет</div><div class="qbig">${q.q}</div>
-    <div class="opts">${q.o.map((o, k) => `<button class="opt" onclick="answerQ(${i},${k},this)">${String.fromCharCode(65 + k)}) ${o}</button>`).join("")}</div>
-    <div class="row" id="qafter" style="margin-top:16px"></div>`);
+function gAnswer(k) {
+  gAns = k; const ok = k === BOARD_Q[gq].a; state.board[gq] = ok; saveState();
+  sfx(ok); if (ok) confetti();
+  const keep = tLeft, run = !!timerInt; go(cur); restoreTimer(keep, run);
 }
-function answerQ(i, k, el) {
-  const q = BOARD_Q[i]; const ok = k === q.a;
-  document.querySelectorAll(".opt").forEach((b, n) => { b.disabled = true; if (n === q.a) b.classList.add("ok"); });
-  if (!ok) el.classList.add("no");
-  state.board[i] = ok; saveState();
-  if (ok) confetti();
-  $("#qafter").innerHTML = (ok ? `<b style="color:var(--ok);font-size:22px">Дұрыс! 🎉</b><button class="btn ok" onclick="award(()=>go(cur))">+1 балл беру</button>`
-    : `<b style="color:var(--bad);font-size:22px">Қате. Дұрыс жауабы — жасыл.</b>`) + `<button class="btn ghost" onclick="closeModal();go(cur)">Жабу</button>`;
-}
+function gNext() { const keep = tLeft, run = !!timerInt; if (gq < BOARD_Q.length - 1) { gq++; gAns = null; } go(cur); restoreTimer(keep, run); }
+function giveQuick(i, el) { S[i].st = 1; saveS(); el.classList.add("given"); el.textContent = "✓ " + S[i].name; el.disabled = true; }
+function restoreTimer(left, run) { const el = $("#timer"); if (!el) return; tLeft = left; el.querySelector(".t").textContent = fmt(left); if (run) tStart(); }
+function sfx(ok) { try { const c = new (window.AudioContext || window.webkitAudioContext)(); const o = c.createOscillator(); const g = c.createGain(); o.connect(g); g.connect(c.destination);
+  const f = ok ? [523, 659, 784] : [300, 220]; f.forEach((v, i) => o.frequency.setValueAtTime(v, c.currentTime + i * 0.12)); g.gain.value = 0.15; o.start(); o.stop(c.currentTime + f.length * 0.12 + 0.1); } catch (e) {} }
 
 // 5. Спикерлер
 let spkTab = 0;
@@ -189,6 +197,22 @@ function rSpeakers() {
       <button class="btn ok" onclick="award()">Спикерге +1 балл</button>
     </div>`;
 }
+
+// 5б. Топтық тапсырма
+let grTab = -1;
+function rGroup() {
+  const body = grTab < 0 ? `<div class="grid5">${GROUPS.map((g, k) => `<div class="card" style="text-align:center;border-top:6px solid ${g.color}"><div style="font-size:42px">✉️</div><b style="font-size:20px;color:${g.color}">${g.icon} ${g.name}</b><div class="sub" style="margin:6px 0 0">6 карточка · 2-еуі артық</div></div>`).join("")}</div>`
+    : (() => { const g = GROUPS[grTab], c = GROUP_TASK.cards[g.id]; return `<div class="spk" style="background:${g.light};border:2px solid ${g.color}">
+      <h2 style="color:${g.color}">${g.icon} ${g.name}</h2>
+      <div class="grid3"><div class="card"><b>🧭 Қалыптасуы</b><ul>${c.f.map(x => `<li class="ans">${x}</li>`).join("")}</ul></div>
+      <div class="card"><b>🏭 Шаруашылық маңызы</b><ul>${c.u.map(x => `<li class="ans">${x}</li>`).join("")}</ul></div>
+      <div class="card"><b>✖ Артық карточкалар</b><ul>${c.x.map(x => `<li style="color:var(--bad);text-decoration:line-through">${x}</li>`).join("")}</ul></div></div>
+      <div class="row" style="margin-top:12px"><span class="method" style="margin:0">Дескриптор: ${GROUP_TASK.descr}</span><button class="btn ok" onclick="giveGroup('${g.id}')">«${g.name}» тобына +1 балл</button></div></div>`; })();
+  return head(GROUP_TASK.title, GROUP_TASK.text) +
+    `<div class="row" style="margin-bottom:14px">${timerHTML(180)}<span style="font-weight:700">Жауабын ашу:</span>
+     ${GROUPS.map((g, k) => `<button class="btn" style="background:${g.color}" onclick="grTab=${k};go(cur)">${g.icon} ${g.name}</button>`).join("")}</div>${body}`;
+}
+function giveGroup(id) { S.forEach(s => { if (s.g === id) s.gr = 1; }); saveS(); confetti(); }
 
 // 6. Оқулықпен жұмыс
 function rBook() {
@@ -270,11 +294,11 @@ function saveRoster() {
   const old = {}; S.forEach(s => old[s.name] = s);
   const out = []; let g = null;
   lines.forEach(l => { const gg = GROUPS.find(x => x.name + ":" === l || x.name === l.replace(/:$/, "")); if (gg) { g = gg.id; return; }
-    if (g) { const o = old[l]; out.push({ name: l, g, st: o ? o.st : 0, bk: o ? o.bk : 0, ws: o ? o.ws : 0 }); } });
+    if (g) { const o = old[l]; out.push({ name: l, g, st: o ? o.st : 0, gr: o ? o.gr || 0 : 0, bk: o ? o.bk : 0, ws: o ? o.ws : 0 }); } });
   if (out.length) { S = out; saveS(); }
   closeModal(); go(cur);
 }
-function resetAll() { S.forEach(s => { s.st = 0; s.bk = 0; s.ws = 0; }); saveS(); state = { intro: [], board: {}, fb: [[0, 0, 0], [0, 0, 0]], video: state.video }; saveState(); closeModal(); go(cur); }
+function resetAll() { S.forEach(s => { s.st = 0; s.gr = 0; s.bk = 0; s.ws = 0; }); saveS(); state = { intro: [], board: {}, fb: [[0, 0, 0], [0, 0, 0]], video: state.video }; saveState(); closeModal(); go(cur); }
 
 go(cur);
 
@@ -296,3 +320,42 @@ function confetti() {
     b.appendChild(s);
   }
 })();
+
+// ===== Тамшы маскоты =====
+let tsTimer;
+function tamshy(mood, text) {
+  const el = document.getElementById("tamshy"); if (!el) return;
+  el.classList.remove("joy", "sad"); void el.offsetWidth; if (mood) el.classList.add(mood);
+  const say = document.getElementById("tsay"); say.textContent = text; say.classList.add("show");
+  clearTimeout(tsTimer); tsTimer = setTimeout(() => say.classList.remove("show"), 3000);
+}
+const TS_STAGE = ["Сәлем! Мен — Тамшымын 💧", "Дәйексөзді оқы да, тобыңды тап! 🔎", "Видеоны мұқият көр! 🎬", "Ойын басталды! 🎮", "Спикерлер, сөз сендерде! 🎤", "Конвертті аш! ✉️", "Детектив, оқулықтан ізде! 🕵️", "Уақыт жүріп жатыр ⏳", "Өзіңді, көршіңді тексер ✅", "Көшбасшылар! 🏆", "Мақсатқа жеттік пе? 🎯"];
+const _go = go; go = function (i) { _go(i); document.getElementById("tamshy").classList.toggle("bigt", cur === 0); setTimeout(() => tamshy("joy", TS_STAGE[cur] || "💧"), 300); };
+const _sfx = sfx; sfx = function (ok) { _sfx(ok); tamshy(ok ? "joy" : "sad", ok ? ["Жарайсың! 🎉", "Керемет! 🌟", "Дұп-дұрыс! 💪"][Math.floor(Math.random() * 3)] : "Тағы ойлан! 🤔"); };
+go(cur);
+
+// ===== Кездейсоқ оқушы =====
+let randOnlyNew = true;
+function openRand() {
+  openModal(`<div style="text-align:center"><h2>🎲 Кездейсоқ оқушы</h2>
+    <label class="sub" style="display:block"><input type="checkbox" id="rOnly" ${randOnlyNew ? "checked" : ""} onchange="randOnlyNew=this.checked"> Тек әлі балл алмағандар</label>
+    <div id="rName" class="rname">?</div><div id="rGroup" class="sub" style="font-size:20px;min-height:28px"></div>
+    <div class="row" style="justify-content:center"><button class="btn" onclick="spinRand()">Айналдыру</button>
+    <button class="btn ok hidden" id="rGive" onclick="">+1 балл</button><button class="btn ghost" onclick="closeModal()">Жабу</button></div></div>`);
+  spinRand();
+}
+function spinRand() {
+  let pool = S.map((s, i) => i).filter(i => !randOnlyNew || !S[i].st);
+  if (!pool.length) pool = S.map((s, i) => i);
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  const nm = $("#rName"), gr = $("#rGroup"), give = $("#rGive"); give.classList.add("hidden"); gr.textContent = "";
+  let n = 0, total = 22, delay = 50;
+  (function step() {
+    const i = n < total ? pool[Math.floor(Math.random() * pool.length)] : pick;
+    nm.textContent = S[i].name; nm.style.color = G(S[i].g).color; nm.classList.toggle("land", n >= total);
+    if (n++ < total) { delay *= 1.12; setTimeout(step, delay); }
+    else { gr.textContent = G(S[pick].g).icon + " " + G(S[pick].g).name + " тобы"; sfx(true);
+      give.classList.remove("hidden"); give.onclick = () => { S[pick].st = 1; saveS(); give.textContent = "✓ Берілді"; give.disabled = true; }; }
+  })();
+}
+$("#btnRand").onclick = openRand;

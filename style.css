@@ -167,3 +167,52 @@ main{padding-top:16px}
 .bigtopic{font-size:44px;font-weight:800;line-height:1.25;color:#0b3f86;max-width:1100px;margin:10px auto 0;text-shadow:0 2px 10px rgba(255,255,255,.6)}
 .title-page h1{font-size:40px}
 .topic{font-size:22px;padding:12px 22px}
+
+.tgoals{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1100px;margin:26px auto 0;text-align:left}
+.tgoals div{background:rgba(255,255,255,.9);border-radius:20px;padding:16px 20px;font-size:21px;line-height:1.45;font-weight:600;box-shadow:0 8px 22px rgba(0,50,100,.12);border-left:8px solid #1e6fd9}
+.tgoals div:last-child{border-left-color:#14a46c}
+.tgoals b{display:block;font-size:15px;color:#0b4fb0;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.gscore{background:#fff;border-radius:18px;padding:10px 18px;font-size:24px;font-weight:800;color:var(--ok);box-shadow:0 6px 18px rgba(20,70,140,.12)}
+.gdots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.gdot{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--muted);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.gdot.cur{background:#1e6fd9;color:#fff;transform:scale(1.15)}
+.gdot.ok{background:#14a46c;color:#fff}.gdot.no{background:#e2483d;color:#fff}
+.gcard{background:rgba(255,255,255,.93);border-radius:24px;padding:26px 30px;text-align:center;box-shadow:0 12px 30px rgba(0,50,100,.15);animation:pop .4s}
+.gnum{color:var(--muted);font-weight:700;margin-bottom:6px}
+.gq{font-size:34px;font-weight:800;line-height:1.3}
+.gopts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.gopt{border:0;border-radius:20px;padding:22px 20px;font-size:26px;font-weight:800;color:#fff;background:var(--c);text-align:left;display:flex;align-items:center;gap:16px;box-shadow:0 8px 0 rgba(0,0,0,.18);transition:.15s}
+.gopt:hover{transform:translateY(-3px)}
+.gopt .sh{font-size:30px;opacity:.9}
+.gopt.right{background:#14a46c;transform:scale(1.04);box-shadow:0 0 0 6px #fff,0 0 0 10px #14a46c;animation:pop .4s}
+.gopt.wrong{animation:shake .4s;opacity:.85}
+.gopt.dim{opacity:.3}
+.gafter{margin-top:16px;background:rgba(255,255,255,.93);border-radius:20px;padding:16px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;animation:enter .3s}
+.gafter .verdict{font-size:24px;font-weight:800;flex:1 1 100%}
+.gafter.ok .verdict{color:var(--ok)}.gafter.no .verdict{color:var(--bad)}
+.who-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1 1 100%}
+.who-chips span{font-weight:700;color:var(--muted);margin-right:4px}
+.who-chips button{border:2px solid var(--c);background:#fff;border-radius:20px;padding:5px 12px;font-size:14px;font-weight:700;color:var(--ink)}
+.who-chips button.given{background:var(--c);color:#fff}
+
+.tamshy{position:fixed;right:22px;bottom:84px;width:96px;z-index:15;transition:all .6s cubic-bezier(.3,1.4,.5,1);cursor:pointer;filter:drop-shadow(0 10px 14px rgba(0,50,110,.3))}
+.tamshy .tsvg{width:100%;display:block;animation:float 3s ease-in-out infinite}
+.tamshy.bigt{width:150px;right:60px;bottom:120px}
+@keyframes float{50%{transform:translateY(-10px) rotate(-3deg)}}
+.tamshy .tw{animation:wv 2.5s linear infinite}
+@keyframes wv{to{transform:translateX(60px)}}
+.tamshy .eyes{animation:blink 4s infinite;transform-origin:60px 92px}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.tamshy.joy{animation:joy .7s}
+@keyframes joy{30%{transform:translateY(-30px) scale(1.1)}60%{transform:translateY(0) scale(.95)}}
+.tamshy.sad{animation:shake .5s 2}
+.tamshy.sad .mouth{d:path("M48 118 Q60 108 72 118")}
+.tamshy .say{position:absolute;right:100%;bottom:60%;margin-right:8px;background:#fff;border-radius:16px 16px 4px 16px;padding:9px 14px;font-weight:700;font-size:15px;white-space:nowrap;box-shadow:0 8px 20px rgba(0,50,100,.18);opacity:0;transform:scale(.6);transform-origin:right bottom;transition:.3s}
+.tamshy .say.show{opacity:1;transform:scale(1)}
+
+.rname{font-size:56px;font-weight:800;margin:24px 0 8px;min-height:70px;transition:transform .2s}
+.rname.land{animation:pop .5s}
+.tamshy{right:auto;left:22px}
+.tamshy.bigt{left:auto;right:60px}
+.tamshy .say{right:auto;left:100%;margin-left:8px;margin-right:0;border-radius:16px 16px 16px 4px;transform-origin:left bottom}
+.tamshy.bigt .say{left:auto;right:100%;margin-right:8px;border-radius:16px 16px 4px 16px;transform-origin:right bottom}

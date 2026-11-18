@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Басып шығаратын материалдар — Құрлық сулары</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 body{font-family:"Times New Roman",serif;color:#111;margin:0;background:#eee}
@@ -21,6 +22,19 @@ td,th{border:1px solid #333;padding:6px 8px;vertical-align:top;text-align:left}
 .name{margin:6px 0 12px;font-size:13pt}
 .small{font-size:11pt;color:#444}
 .ws{border:1px solid #333;padding:8mm;margin-bottom:6mm;page-break-inside:avoid}
+.ws-page{font-family:Montserrat,Arial,sans-serif;padding:10mm 12mm}
+.ws-banner{height:38mm;border-radius:6mm;background:linear-gradient(90deg,rgba(6,50,110,.75),rgba(6,50,110,.15)),url(bg.jpg) center/cover;color:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 8mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ws-k{font-size:10pt;opacity:.9;letter-spacing:.05em}.ws-t{font-size:26pt;font-weight:800}.ws-s{font-size:12pt;opacity:.95}
+.ws-v{background:#fff;color:#0b4fb0;border-radius:50%;width:24mm;height:24mm;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:24pt;font-weight:800;line-height:1}.ws-v small{font-size:8pt;font-weight:600}
+.ws-meta{display:flex;gap:6mm;margin:5mm 0;font-size:11.5pt;font-weight:600}.ws-meta div:first-child{flex:1}.ws-l{display:inline-block;width:70mm;border-bottom:1px solid #333}
+.ws-task{display:flex;gap:4mm;align-items:flex-start;border:1.5px solid #bcd6f2;border-radius:4mm;padding:4mm;margin-bottom:4mm;background:#f6fbff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ws-n{flex:none;width:9mm;height:9mm;border-radius:50%;background:#1e6fd9;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ws-b{flex:1}.ws-q{font-size:12.5pt;font-weight:600;margin-bottom:2mm}.ws-a{border-bottom:1px dashed #7aa7d6;height:8mm}
+.ws-p{flex:none;font-size:10pt;color:#0b4fb0;font-weight:700}
+.ws-foot{display:flex;justify-content:space-between;font-size:11.5pt;margin-top:3mm}.ws-sum{font-weight:800;color:#0b4fb0}
+.ws-self{margin-top:4mm;text-align:center;font-size:11pt;background:#eef6ff;border-radius:4mm;padding:3mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.cut{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:6mm}.cutc{border:2px dashed;border-radius:3mm;height:28mm;display:flex;align-items:center;justify-content:center;text-align:center;padding:3mm;font-family:Arial,sans-serif;font-size:13pt;font-weight:600}
+.stick{display:grid;grid-template-columns:1fr 1fr;gap:5mm}.stick div{border:2px solid #333;border-radius:4mm;height:95mm;padding:4mm;font-family:Arial,sans-serif;font-size:14pt}
 @media print{body{background:#fff}.bar{display:none}.page{margin:0;width:auto;min-height:auto}}
 </style>
 </head>
@@ -43,14 +57,19 @@ GROUPS.forEach(g=>{const s=SPEAKERS[g.id];h+=`<div class="page"><h1>Спикер
 <div class="name">Спикер: ______________________________</div>
 <table><tr><th style="width:28%">Жоспар</th><th>Толтыр</th></tr>${s.plan.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}<div class="line"></div></td></tr>`).join("")}
 <tr><td><b>Сыныпқа сұрағым</b></td><td><div class="line"></div><div class="line"></div></td></tr></table></div>`});
-// 3. Жұмыс парақтары
-WORKSHEETS.forEach(w=>{h+=`<div class="page"><h1>Жұмыс парағы · ${w.n}-нұсқа</h1>
-<div class="name">Аты-жөні: ______________________________ · 8 ӘБГЕ</div>
-<p class="small">Әр тапсырма — 1 балл. Барлығы — 5 балл. Уақыт — 7 минут.</p>
-<table><tr><th style="width:6%">№</th><th style="width:44%">Тапсырма</th><th>Жауабы</th><th style="width:9%">Балл</th></tr>
-${w.tasks.map((t,i)=>`<tr><td>${i+1}</td><td>${t[0]}</td><td><div class="line"></div><div class="line"></div></td><td></td></tr>`).join("")}
-<tr><td colspan="3" style="text-align:right"><b>Барлығы:</b></td><td></td></tr></table>
-<p class="small">Тексерген: ☐ өзім ☐ көршім ☐ мұғалім</p></div>`});
+// 3. Жұмыс парақтары — әдемі дизайн
+const WS_IC=["🧭","💧","🏔️","🏞️","🌱"];
+WORKSHEETS.forEach(w=>{h+=`<div class="page ws-page"><div class="ws-banner"><div><div class="ws-k">8 сынып · География · §26–27</div><div class="ws-t">Құрлық сулары</div><div class="ws-s">Жұмыс парағы</div></div><div class="ws-v">${w.n}<small>нұсқа</small></div></div>
+<div class="ws-meta"><div>👤 Аты-жөні: <span class="ws-l"></span></div><div>⏱ 7 минут</div><div>⭐ 5 балл</div></div>
+${w.tasks.map((t,i)=>`<div class="ws-task"><div class="ws-n">${i+1}</div><div class="ws-b"><div class="ws-q">${WS_IC[i]} ${t[0]}</div><div class="ws-a"></div><div class="ws-a"></div></div><div class="ws-p">☐ 1 б.</div></div>`).join("")}
+<div class="ws-foot"><div>Тексерген: ☐ өзім &nbsp; ☐ көршім &nbsp; ☐ мұғалім</div><div class="ws-sum">Барлығы: ____ / 5</div></div>
+<div class="ws-self">Сабақтағы көңіл-күйім: 🌊 ағып барамын &nbsp; 🏞️ ойланып тұрмын &nbsp; 🟫 тұрып қалдым</div></div>`});
+// 3б. Топтық тапсырма: конверт карточкалары + жапсыру парағы
+GROUPS.forEach(g=>{const c=GROUP_TASK.cards[g.id];const all=[...c.f,...c.u,...c.x].sort((a,b)=>a.length%3-b.length%3);
+h+=`<div class="page"><div class="ws-banner" style="height:28mm"><div><div class="ws-t" style="font-size:22pt">✉️ Конвертте не бар? — «${g.name}» тобы</div><div class="ws-s">Қиып алып, конвертке салыңыз</div></div></div>
+<div class="cut">${all.map(x=>`<div class="cutc" style="border-color:${g.color}">${x}</div>`).join("")}</div>
+<h2 style="margin-top:10mm">Топтың парағы: «${g.name}»</h2><p class="small">Өз суларыңа қатысты карточкаларды бағандарға жапсырыңдар. 2 карточка — артық!</p>
+<div class="stick"><div><b>🧭 Қалыптасуы</b></div><div><b>🏭 Шаруашылық маңызы</b></div></div></div>`});
 // 4. Бағалау парағы (мұғалімге)
 h+=`<div class="page"><h1>Бағалау парағы (мұғалімге)</h1><p class="small">${LESSON.topic}</p>
 <table><tr><th>№</th><th>Оқушы</th><th>Топ</th>${CRITERIA.map(c=>`<th>${c.name} (${c.max})</th>`).join("")}<th>Барлығы (10)</th></tr>
