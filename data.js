@@ -14,11 +14,11 @@ const LESSON = {
 
 // 5 топ (түсі, атауы, оқушы саны)
 const GROUPS = [
-  { id: "ozen",    name: "Өзен",          color: "#1e6fd9", light: "#e3efff", count: 5, icon: "🌊" },
-  { id: "kol",     name: "Көл",           color: "#17a673", light: "#e1f7ee", count: 5, icon: "🏞️" },
-  { id: "muzdyk",  name: "Мұздық",        color: "#5bb8d6", light: "#e6f6fb", count: 5, icon: "❄️" },
-  { id: "batpak",  name: "Батпақ",        color: "#8a6a3b", light: "#f3ece1", count: 4, icon: "🌾" },
-  { id: "zherasty",name: "Жерасты суы",   color: "#7b4fc9", light: "#efe8fb", count: 4, icon: "💧" }
+  { id: "ozen", img: "img/ozen.jpg",    name: "Өзен",          color: "#1e6fd9", light: "#e3efff", count: 5, icon: "🌊" },
+  { id: "kol", img: "img/kol.jpg",     name: "Көл",           color: "#17a673", light: "#e1f7ee", count: 5, icon: "🏞️" },
+  { id: "muzdyk", img: "img/muzdyk.jpg",  name: "Мұздық",        color: "#5bb8d6", light: "#e6f6fb", count: 5, icon: "❄️" },
+  { id: "batpak", img: "img/batpak.jpg",  name: "Батпақ",        color: "#8a6a3b", light: "#f3ece1", count: 4, icon: "🌾" },
+  { id: "zherasty", img: "img/zherasty.jpg",name: "Жерасты суы",   color: "#7b4fc9", light: "#efe8fb", count: 4, icon: "💧" }
 ];
 
 // Сабақ басы: «Дәйексөз — менің тобым». Карточкада тек дәйексөз (түсі де, су атауы да жоқ).

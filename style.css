@@ -221,3 +221,12 @@ main{padding-top:16px}
 .title-page .hello{font-size:60px}
 .tamshy.bigt .say{display:none}
 .tamshy.bigt{bottom:90px;right:30px;width:120px}
+
+.spkimg{display:grid;grid-template-columns:42% 1fr;gap:26px;align-items:stretch}
+.spkimg .pic{border-radius:20px;background:center/cover;min-height:340px;box-shadow:0 10px 26px rgba(0,0,0,.2)}
+.gimg{padding:0;overflow:hidden}
+.gimg .pic{height:130px;background:center/cover;display:flex;align-items:flex-end;justify-content:flex-end;padding:8px}
+.gimg .pic span{font-size:30px;background:#fff;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center}
+.gimg b{display:block;margin-top:10px}.gimg .sub{padding-bottom:14px}
+.drop .b .tx,.drop .b .nm{text-shadow:0 2px 6px rgba(0,0,0,.45)}
+.tamshy{width:74px;bottom:80px;left:12px}

@@ -109,7 +109,7 @@ function rIntro() {
   const cards = QUOTES.map((d, i) => { const g = G(d.g); const o = opened.includes(i);
     return `<div class="drop q ${o ? "open" : ""}" onclick="openIntro(${i})"><div class="in">
       <div class="f qf"><div class="num">${i + 1}</div><div class="qt">«${d.q}»</div><div class="au">— ${d.a}</div></div>
-      <div class="b" style="background:linear-gradient(160deg,${g.color},${g.color}dd)"><div style="font-size:30px">${g.icon}</div><div class="nm" style="margin-top:2px">${g.name}</div><div class="tx">${d.why}</div></div></div></div>`; }).join("");
+      <div class="b" style="background:linear-gradient(180deg,${g.color}55,${g.color}ee),url(${g.img}) center/cover"><div style="font-size:30px">${g.icon}</div><div class="nm" style="margin-top:2px">${g.name}</div><div class="tx">${d.why}</div></div></div></div>`; }).join("");
   const has = id => opened.some(i => QUOTES[i].g === id);
   const slot = id => `<span class="slot ${has(id) ? "fill" : ""}" data-g="${id}">${GOAL_KEYS[id]}</span>`;
   const all = SLOT_ORDER.every(has);
@@ -190,19 +190,20 @@ function rSpeakers() {
   const g = GROUPS[spkTab]; const sp = SPEAKERS[g.id];
   return head("Спикерлер сыныпқа түсіндіреді", "Спикер өз суын жоспар бойынша түсіндіреді. Сынып тыңдап, 1 сұрақ қояды.") +
     `<div class="tabs">${GROUPS.map((x, k) => `<button class="${k === spkTab ? "on" : ""}" style="background:${x.color};color:#fff" onclick="spkTab=${k};go(cur)">${x.icon} ${x.name}</button>`).join("")}</div>
-    <div class="spk" style="background:${g.light};border:2px solid ${g.color}">
+    <div class="spk spkimg" style="background:${g.light};border:2px solid ${g.color}">
+      <div class="pic" style="background-image:url(${g.img})"></div><div>
       <h2 style="color:${g.color}">${g.icon} ${g.name}</h2>
       <ol>${sp.plan.map(p => `<li><b>${p[0]}</b></li>`).join("")}</ol>
       <div class="sub">Оқулық: ${sp.pages}-беттер</div>
       <button class="btn ok" onclick="award()">Спикерге +1 балл</button>
-    </div>`;
+    </div></div>`;
 }
 
 // 5б. Топтық тапсырма
 let grTab = -1;
 function rGroup() {
-  const body = grTab < 0 ? `<div class="grid5">${GROUPS.map((g, k) => `<div class="card" style="text-align:center;border-top:6px solid ${g.color}"><div style="font-size:42px">✉️</div><b style="font-size:20px;color:${g.color}">${g.icon} ${g.name}</b><div class="sub" style="margin:6px 0 0">6 карточка · 2-еуі артық</div></div>`).join("")}</div>`
-    : (() => { const g = GROUPS[grTab], c = GROUP_TASK.cards[g.id]; return `<div class="spk" style="background:${g.light};border:2px solid ${g.color}">
+  const body = grTab < 0 ? `<div class="grid5">${GROUPS.map((g, k) => `<div class="card gimg" style="text-align:center;border-top:6px solid ${g.color}"><div class="pic" style="background-image:url(${g.img})"><span>✉️</span></div><b style="font-size:20px;color:${g.color}">${g.icon} ${g.name}</b><div class="sub" style="margin:6px 0 0">6 карточка · 2-еуі артық</div></div>`).join("")}</div>`
+    : (() => { const g = GROUPS[grTab], c = GROUP_TASK.cards[g.id]; return `<div class="spk" style="background:linear-gradient(90deg,${g.light}f2,${g.light}e6),url(${g.img}) center/cover;border:2px solid ${g.color}">
       <h2 style="color:${g.color}">${g.icon} ${g.name}</h2>
       <div class="grid3"><div class="card"><b>🧭 Қалыптасуы</b><ul>${c.f.map(x => `<li class="ans">${x}</li>`).join("")}</ul></div>
       <div class="card"><b>🏭 Шаруашылық маңызы</b><ul>${c.u.map(x => `<li class="ans">${x}</li>`).join("")}</ul></div>

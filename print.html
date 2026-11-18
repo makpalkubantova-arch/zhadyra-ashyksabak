@@ -52,7 +52,7 @@ allQ.slice(p,p+12).map(q=>`<div class="qc">${q.n?`<span class="qn">${q.n}</span>
 h+=`<div class="page"><h2>Дәйексөз карточкаларының жауап кілті (мұғалімге)</h2><table><tr><th>№</th><th>Дәйексөз</th><th>Авторы</th><th>Тобы</th></tr>${allQ.map((q,i)=>`<tr><td>${q.n||"—"}</td><td>«${q.q}»</td><td>${q.a}</td><td><b>${G(q.g).name}</b></td></tr>`).join("")}</table>
 <p class="small">Парталарға топ атаулары жазылған тақтайшалар қойылады: Өзен (5), Көл (5), Мұздық (5), Батпақ (4), Жерасты суы (4).</p></div>`;
 // 2. Спикерлердің дайындық парақтары
-GROUPS.forEach(g=>{const s=SPEAKERS[g.id];h+=`<div class="page"><h1>Спикердің дайындық парағы — «${g.name}» тобы</h1>
+GROUPS.forEach(g=>{const s=SPEAKERS[g.id];h+=`<div class="page"><div class="ws-banner" style="height:34mm;background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,.05)),url(${g.img}) center/cover"><div><div class="ws-k">Спикердің дайындық парағы</div><div class="ws-t">${g.icon} ${g.name}</div></div></div>
 <p class="small">Оқулық: ${s.pages}-беттер. Бос орындарды толтырып, сыныпқа 1,5 минутта түсіндір. Соңында сыныпқа 1 сұрақ қой.</p>
 <div class="name">Спикер: ______________________________</div>
 <table><tr><th style="width:28%">Жоспар</th><th>Толтыр</th></tr>${s.plan.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}<div class="line"></div></td></tr>`).join("")}
