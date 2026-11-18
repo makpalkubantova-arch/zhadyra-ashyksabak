@@ -256,11 +256,11 @@ function checkPanel(key, crit, answersHtml) {
 
 // 6. Оқулықпен жұмыс
 function rBook() {
-  const ans = `<table><tr><th style="width:24%">Су түрі</th><th>Дескриптор: шаруашылықта пайдаланылуы</th><th style="width:10%">Балл</th></tr>
-    ${BOOK_TASK.rows.map(r => `<tr><td><b>${r[0]}</b></td><td class="ans">${r[1]}</td><td>1</td></tr>`).join("")}
-    <tr><td colspan="2" style="text-align:right"><b>Барлығы</b></td><td><b>3</b></td></tr></table>`;
-  return head(BOOK_TASK.title, "Жауапты оқулықтан «детективтей» іздеп, дәптерге жазамыз. " + BOOK_TASK.descr) +
-    `<div class="row" style="margin-bottom:14px">${timerHTML(180)}<div class="card" style="font-size:19px;flex:1;padding:14px 18px">${BOOK_TASK.text}</div></div>
+  const ans = `<table><tr><th style="width:15%">Топ</th>${BOOK_TASK.cols.map(c => `<th>${c}</th>`).join("")}</tr>
+    ${GROUPS.map(g => { const r = BOOK_TASK.rows[g.id]; return `<tr><td><b style="color:${g.color}">${g.icon} ${g.name}</b><br><small>${r[0]}-бет</small></td><td class="ans">${r[1]}</td><td class="ans">${r[2]}</td><td class="ans">${r[3]}</td></tr>`; }).join("")}
+    <tr><td colspan="3" style="text-align:right"><b>Әр баған — 1 балл · Барлығы</b></td><td><b>3 балл</b></td></tr></table>`;
+  return head(BOOK_TASK.title, BOOK_TASK.text) +
+    `<div class="row" style="margin-bottom:14px">${timerHTML(180)}<div class="row">${GROUPS.map(g => `<span class="gchip" style="background:${g.color};font-size:15px;padding:8px 14px;animation:none">${g.icon} ${g.name} — ${BOOK_TASK.rows[g.id][0]}-бет</span>`).join("")}</div></div>
     ${checkPanel("bk", "bk", ans)}`;
 }
 
