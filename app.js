@@ -93,10 +93,9 @@ const head = (title, sub) => `<div class="shead"><div class="method">${STAGES[cu
 // 1. Басы
 function rTitle() {
   return `<div class="title-page">
-    <div class="meta">${LESSON.school} · ${LESSON.cls} · ${LESSON.date}<br>Мұғалім: ${LESSON.teacher}</div>
+    <div class="meta">${LESSON.school}<br>Мұғалім: ${LESSON.teacher}</div>
     <div class="hello">👋</div>
     <h1>Сәлеметсіздер ме, балалар!</h1>
-    <div class="sub" style="font-size:22px">Амандасу · Түгендеу · Карточкаңдағы дәйексөзді оқып, өз тобыңды тап</div>
     <div class="groups-strip">${GROUPS.map(g => `<span class="gchip" style="background:${g.color}">${g.icon} ${g.name}</span>`).join("")}</div>
   </div>`;
 }
