@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<title>Басып шығаратын материалдар — Құрлық сулары</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:"Times New Roman",serif;color:#111;margin:0;background:#eee}
+.bar{position:sticky;top:0;background:#fff;padding:10px 16px;border-bottom:1px solid #ccc;font-family:Arial,sans-serif;display:flex;gap:10px;align-items:center}
+.bar button{padding:8px 14px;font-size:15px;cursor:pointer}
+.page{width:210mm;min-height:297mm;margin:10mm auto;background:#fff;padding:14mm;page-break-after:always}
+h1{font-size:20pt;margin:0 0 6px}h2{font-size:16pt;margin:0 0 6px}
+p,li,td,th{font-size:13pt}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:6mm}
+.drop{border:2px dashed #999;border-radius:10mm;height:58mm;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:Arial,sans-serif}
+.drop .i{font-size:34pt}.drop .n{font-size:18pt;font-weight:700}
+table{border-collapse:collapse;width:100%}
+td,th{border:1px solid #333;padding:6px 8px;vertical-align:top;text-align:left}
+.line{border-bottom:1px solid #333;height:22px}
+.name{margin:6px 0 12px;font-size:13pt}
+.small{font-size:11pt;color:#444}
+.ws{border:1px solid #333;padding:8mm;margin-bottom:6mm;page-break-inside:avoid}
+@media print{body{background:#fff}.bar{display:none}.page{margin:0;width:auto;min-height:auto}}
+</style>
+</head>
+<body>
+<div class="bar"><b>🖨 Материалдар</b><button onclick="print()">Басып шығару</button><span style="color:#666">Түсті карточкалар үшін түсті принтер қажет</span></div>
+<div id="out"></div>
+<script src="data.js"></script>
+<script>
+const G=id=>GROUPS.find(g=>g.id===id);let h="";
+// 1. Тамшы-карточкалар (23)
+let cards=[];GROUPS.forEach(g=>{for(let i=0;i<g.count;i++)cards.push(g)});
+for(let p=0;p<cards.length;p+=12){h+=`<div class="page"><h2>Тамшы-карточкалар (есік алдында таратылады) ${p?"— жалғасы":""}</h2><div class="cards">`+
+cards.slice(p,p+12).map(g=>`<div class="drop" style="background:${g.color};-webkit-print-color-adjust:exact;print-color-adjust:exact"><div class="i">💧</div><div class="n">${g.name}</div></div>`).join("")+`</div></div>`;}
+// 2. Спикерлердің дайындық парақтары
+GROUPS.forEach(g=>{const s=SPEAKERS[g.id];h+=`<div class="page"><h1>Спикердің дайындық парағы — «${g.name}» тобы</h1>
+<p class="small">Оқулық: ${s.pages}-беттер. Бос орындарды толтырып, сыныпқа 1,5 минутта түсіндір. Соңында сыныпқа 1 сұрақ қой.</p>
+<div class="name">Спикер: ______________________________</div>
+<table><tr><th style="width:28%">Жоспар</th><th>Толтыр</th></tr>${s.plan.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}<div class="line"></div></td></tr>`).join("")}
+<tr><td><b>Сыныпқа сұрағым</b></td><td><div class="line"></div><div class="line"></div></td></tr></table></div>`});
+// 3. Жұмыс парақтары
+WORKSHEETS.forEach(w=>{h+=`<div class="page"><h1>Жұмыс парағы · ${w.n}-нұсқа</h1>
+<div class="name">Аты-жөні: ______________________________ · 8 ӘБГЕ</div>
+<p class="small">Әр тапсырма — 1 балл. Барлығы — 5 балл. Уақыт — 7 минут.</p>
+<table><tr><th style="width:6%">№</th><th style="width:44%">Тапсырма</th><th>Жауабы</th><th style="width:9%">Балл</th></tr>
+${w.tasks.map((t,i)=>`<tr><td>${i+1}</td><td>${t[0]}</td><td><div class="line"></div><div class="line"></div></td><td></td></tr>`).join("")}
+<tr><td colspan="3" style="text-align:right"><b>Барлығы:</b></td><td></td></tr></table>
+<p class="small">Тексерген: ☐ өзім ☐ көршім ☐ мұғалім</p></div>`});
+// 4. Бағалау парағы (мұғалімге)
+h+=`<div class="page"><h1>Бағалау парағы (мұғалімге)</h1><p class="small">${LESSON.topic}</p>
+<table><tr><th>№</th><th>Оқушы</th><th>Топ</th>${CRITERIA.map(c=>`<th>${c.name} (${c.max})</th>`).join("")}<th>Барлығы (10)</th></tr>
+${Array.from({length:23},(_,i)=>`<tr><td>${i+1}</td><td style="width:35%"></td><td></td>${CRITERIA.map(()=>"<td></td>").join("")}<td></td></tr>`).join("")}</table></div>`;
+document.getElementById("out").innerHTML=h;
+</script>
+</body>
+</html>
