@@ -165,7 +165,7 @@ function rVideo() {
 // 4. Тақта ойыны — 15 сұрақ, жауап бірден белгіленеді
 let gq = 0, gAns = null;
 const SHAPES = [["▲", "#e2483d"], ["◆", "#1e6fd9"], ["●", "#f2a900"], ["■", "#14a46c"]];
-const BQ_TYPE = ["ozen","zherasty","zherasty","zherasty","zherasty","ozen","ozen","kol","kol","kol","kol","batpak","batpak","muzdyk","muzdyk"];
+const BQ_TYPE = ["ozen","zherasty","zherasty","zherasty","ozen","kol","kol","kol","batpak","batpak","muzdyk","muzdyk"];
 let gWho = null;
 function rBoard() {
   const b = state.board; const q = BOARD_Q[gq]; const g = G(BQ_TYPE[gq]);
@@ -178,7 +178,7 @@ function rBoard() {
       <div class="verdict">${gAns === q.a ? (gWho !== null ? `✅ Дұрыс! ${esc(S[gWho].name)} +1 балл` : "✅ Дұрыс! +1 балл") : "❌ Қате! Дұрыс жауабы жасылмен белгіленді"}</div>
       ${gAns === q.a && gWho === null ? `<div class="who-chips"><span>Кім жауап берді?</span>${S.map((s, i) => s.st ? "" : `<button style="--c:${G(s.g).color}" onclick="giveQuick(${i},this)">${esc(s.name)}</button>`).join("")}</div>` : ""}
       <button class="btn" onclick="gNext()">${gq < BOARD_Q.length - 1 ? "Келесі сұрақ →" : "Ойын аяқталды 🎉"}</button></div>`;
-  return head("Тақта ойыны: 15 сұрақ", "🎲 оқушыны таңдайды → әр сұраққа 25 секунд → оқушы тақтада жауапты басады → бірден белгіленеді. Осы уақытта 5 спикер дайындалады.") +
+  return head("Тақта ойыны: 12 сұрақ", "🎲 оқушыны таңдайды → әр сұраққа 25 секунд → оқушы тақтада жауапты басады → бірден белгіленеді. Осы уақытта 5 спикер дайындалады.") +
     `<div class="row" style="justify-content:space-between;margin-bottom:10px">${timerHTML(25)}<div class="gdots">${dots}</div><div class="gscore">✅ ${right} / ${BOARD_Q.length}</div></div>
     <div class="g3">
       <div class="gmodel"><div class="gmh" style="background:${g.color}">${g.icon} Макет: ${g.name}</div><div class="dwrap" data-d="img/d_${g.id}.svg"><img src="img/d_${g.id}.svg" alt=""></div></div>
@@ -214,7 +214,7 @@ function sfx(ok) { try { const c = new (window.AudioContext || window.webkitAudi
 let spkTab = 0, spkView = "d";
 function rSpeakers() {
   const g = GROUPS[spkTab]; const sp = SPEAKERS[g.id];
-  return head("Спикерлер сыныпқа түсіндіреді", "Әр спикер өз суын жоспар бойынша 1 минутта түсіндіреді.") +
+  return head("Спикерлер сыныпқа түсіндіреді", "Әр спикер өз суын 1 минутта түсіндіреді. Әлі балл алмаған 4 оқушы спикерлерге сұрақ қояды (+1 балл).") +
     `<div class="tabs">${GROUPS.map((x, k) => `<button class="${k === spkTab ? "on" : ""}" style="background:${x.color};color:#fff" onclick="spkTab=${k};go(cur)">${x.icon} ${x.name}</button>`).join("")}</div>
     <div class="spk spkimg" style="background:${g.light};border:2px solid ${g.color}">
       <div><div class="vtabs"><button class="${spkView === "d" ? "on" : ""}" onclick="spkView='d';go(cur)">📐 Сызба</button><button class="${spkView === "p" ? "on" : ""}" onclick="spkView='p';go(cur)">📷 Сурет</button></div>
@@ -222,7 +222,7 @@ function rSpeakers() {
       <h2 style="color:${g.color}">${g.icon} ${g.name}</h2>
       <ol>${sp.plan.map(p => `<li><b>${p[0]}</b></li>`).join("")}</ol>
       <div class="sub">Оқулық: ${sp.pages}-беттер</div>
-      <button class="btn ok" onclick="award()">Спикерге +1 балл</button>
+      <div class="row"><button class="btn ok" onclick="award()">🎤 Спикерге +1 балл</button><button class="btn" onclick="award()">❓ Сұрақ қойған оқушыға +1 балл</button></div>
     </div></div>`;
 }
 
