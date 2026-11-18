@@ -12,6 +12,7 @@ body{font-family:"Times New Roman",serif;color:#111;margin:0;background:#eee}
 h1{font-size:20pt;margin:0 0 6px}h2{font-size:16pt;margin:0 0 6px}
 p,li,td,th{font-size:13pt}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:6mm}
+.qc{border:2px dashed #999;border-radius:6mm;height:58mm;padding:5mm;position:relative;display:flex;flex-direction:column;justify-content:center;font-family:Arial,sans-serif}.qn{position:absolute;top:3mm;left:3mm;width:8mm;height:8mm;border-radius:50%;background:#1e6fd9;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}.qq{font-size:12.5pt;font-style:italic;line-height:1.3}.qa{font-size:10.5pt;color:#444;margin-top:2mm}.qh{font-size:10pt;margin-top:3mm}
 .drop{border:2px dashed #999;border-radius:10mm;height:58mm;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:Arial,sans-serif}
 .drop .i{font-size:34pt}.drop .n{font-size:18pt;font-weight:700}
 table{border-collapse:collapse;width:100%}
@@ -24,15 +25,18 @@ td,th{border:1px solid #333;padding:6px 8px;vertical-align:top;text-align:left}
 </style>
 </head>
 <body>
-<div class="bar"><b>🖨 Материалдар</b><button onclick="print()">Басып шығару</button><span style="color:#666">Түсті карточкалар үшін түсті принтер қажет</span></div>
+<div class="bar"><b>🖨 Материалдар</b><button onclick="print()">Басып шығару</button><span style="color:#666">Дәйексөз карточкалары · спикер парақтары · жұмыс парақтары · бағалау парағы</span></div>
 <div id="out"></div>
 <script src="data.js"></script>
 <script>
 const G=id=>GROUPS.find(g=>g.id===id);let h="";
-// 1. Тамшы-карточкалар (23)
-let cards=[];GROUPS.forEach(g=>{for(let i=0;i<g.count;i++)cards.push(g)});
-for(let p=0;p<cards.length;p+=12){h+=`<div class="page"><h2>Тамшы-карточкалар (есік алдында таратылады) ${p?"— жалғасы":""}</h2><div class="cards">`+
-cards.slice(p,p+12).map(g=>`<div class="drop" style="background:${g.color};-webkit-print-color-adjust:exact;print-color-adjust:exact"><div class="i">💧</div><div class="n">${g.name}</div></div>`).join("")+`</div></div>`;}
+// 1. Дәйексөз карточкалары (23) — түссіз, су атауы жоқ
+const allQ=[...QUOTES.map((q,i)=>({...q,n:i+1})),...QUOTES_REST.map(q=>({...q,n:""}))];
+for(let p=0;p<allQ.length;p+=12){h+=`<div class="page"><h2>Дәйексөз карточкалары ${p?"— жалғасы":""}</h2><p class="small">Есік алдында таратылады. Нөмірлі 10 карточканы оқитын оқушылар тақтадағы ретпен орнынан оқиды. Қалғандары өз тобын үнсіз табады.</p><div class="cards">`+
+allQ.slice(p,p+12).map(q=>`<div class="qc">${q.n?`<span class="qn">${q.n}</span>`:""}<div class="qq">«${q.q}»</div><div class="qa">— ${q.a}</div><div class="qh">Менің тобым: ____________</div></div>`).join("")+`</div></div>`;}
+// Жауап кілті (мұғалімге)
+h+=`<div class="page"><h2>Дәйексөз карточкаларының жауап кілті (мұғалімге)</h2><table><tr><th>№</th><th>Дәйексөз</th><th>Авторы</th><th>Тобы</th></tr>${allQ.map((q,i)=>`<tr><td>${q.n||"—"}</td><td>«${q.q}»</td><td>${q.a}</td><td><b>${G(q.g).name}</b></td></tr>`).join("")}</table>
+<p class="small">Парталарға топ атаулары жазылған тақтайшалар қойылады: Өзен (5), Көл (5), Мұздық (5), Батпақ (4), Жерасты суы (4).</p></div>`;
 // 2. Спикерлердің дайындық парақтары
 GROUPS.forEach(g=>{const s=SPEAKERS[g.id];h+=`<div class="page"><h1>Спикердің дайындық парағы — «${g.name}» тобы</h1>
 <p class="small">Оқулық: ${s.pages}-беттер. Бос орындарды толтырып, сыныпқа 1,5 минутта түсіндір. Соңында сыныпқа 1 сұрақ қой.</p>
