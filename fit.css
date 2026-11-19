@@ -39,3 +39,4 @@ body:before{display:none!important}
 .video{aspect-ratio:auto!important;height:480px}
 .spkimg .dwrap svg,.spkimg .dwrap img{max-height:410px!important}.spkimg .pic{min-height:380px!important}
 #frame main .card[style*="margin-bottom:14px"]{margin-bottom:8px!important}
+.hidebox{background:#f3f8ff;border:2px dashed #b9d4f3;border-radius:16px;padding:26px;text-align:center;font-size:20px;font-weight:700;color:#3b5a7a;line-height:2}

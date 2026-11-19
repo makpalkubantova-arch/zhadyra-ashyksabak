@@ -245,13 +245,13 @@ function giveGroup(id) { S.forEach(s => { if (s.g === id) s.gr = 1; }); saveS();
 // ===== Әр тапсырмадан кейінгі тексеру панелі (өзін-өзі → көршісі → мұғалім) =====
 let ckStep = {};
 function checkPanel(key, crit, answersHtml) {
-  const c = CRITERIA.find(x => x.id === crit); const st = ckStep[key] || 0;
+  const c = CRITERIA.find(x => x.id === crit); const st = ckStep[key] === undefined ? -1 : ckStep[key];
   const steps = ["1. 🙋 Өзін-өзі тексереді", "2. 🤝 Көршісімен алмасып тексереді", "3. 👩‍🏫 Мұғалім баллды қояды"];
   const grid = `<div class="sgrid">${S.map((s, i) => `<div class="scell"><span class="dot" style="background:${G(s.g).color}"></span><b>${esc(s.name)}</b>
      <div class="pick">${Array.from({ length: c.max + 1 }, (_, v) => `<button class="${(s[crit] || 0) === v ? "on" : ""}" onclick="setScore(${i},'${crit}',${v})">${v}</button>`).join("")}</div></div>`).join("")}</div>`;
   return `<div class="ckbox"><div class="ckhead">✅ Тексеру · <span>${c.name}: 0–${c.max} балл</span> · <small>${c.d}</small></div>
     <div class="steps">${steps.map((s, k) => `<div class="${k === st ? "on" : ""}" onclick="ckStep['${key}']=${k};go(cur)" style="cursor:pointer">${s}</div>`).join("")}</div>
-    ${st < 2 ? answersHtml : grid}</div>`;
+    ${st < 0 ? `<div class="hidebox">🔒 Оқушылар тапсырманы орындап жатыр — жауаптар жасырулы.<br><button class="btn ok" onclick="ckStep['${key}']=0;go(cur)">✅ Уақыт бітті — дескрипторды ашу</button></div>` : st < 2 ? answersHtml : grid}</div>`;
 }
 
 // 6. Оқулықпен жұмыс
