@@ -8,8 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="design-refresh.css">
+<link rel="stylesheet" href="fit.css">
 </head>
 <body>
+<div id="frame">
 <div class="bubbles" id="bubbles"></div>
 <header class="top">
   <div class="brand">💧 Құрлық сулары</div>
@@ -39,7 +41,12 @@
 
 <div id="modal" class="modal hidden"><div class="modal-box" id="modalBox"></div></div>
 
+</div>
 <script src="data.js"></script>
 <script src="app.js"></script>
+<script>
+(function(){function fit(){var f=document.getElementById('frame');if(!f)return;var W=1600,H=900,z=Math.min(innerWidth/W,innerHeight/H);f.style.transform='scale('+z+')';f.style.left=Math.max(0,(innerWidth-W*z)/2)+'px';f.style.top=Math.max(0,(innerHeight-H*z)/2)+'px';}
+addEventListener('resize',fit);addEventListener('load',fit);fit();})();
+</script>
 </body>
 </html>

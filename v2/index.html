@@ -119,9 +119,23 @@ th{background:#eef6ff}
 .modal>div{background:#fff;border-radius:24px;padding:24px;width:min(760px,92%);max-height:88vh;overflow:auto}
 textarea{width:100%;font:inherit;padding:10px;border-radius:12px;border:1px solid #d6e2ef}
 .rname{font-size:52px;font-weight:900;text-align:center;margin:20px 0}
+
+/* 16:9 — бәрі бір экранға сыяды */
+html,body{height:100%;overflow:hidden;background:#06142b}
+#frame{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;background:#0b2a55 url(../img/muzdyk.jpg) center/cover}
+#frame:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(6,30,70,.82),rgba(10,70,120,.55));z-index:0}
+body:before{display:none}
+.app{height:100%!important}
+.st-wrap,.modal,.conf{position:absolute}
+.st{max-height:860px}
+.hero img{height:520px;object-fit:cover;object-position:center 40%}
+.goals{margin-top:10px}.goal{padding:12px 16px;font-size:18px}
+.map{width:1244px;margin:0 auto}.map img{height:700px;width:1244px}
+main{padding-bottom:10px}
 </style>
 </head>
 <body>
+<div id="frame">
 <div class="app">
   <div class="top">
     <div class="logo">💧 Тамшының <span>саяхаты</span></div>
@@ -135,6 +149,7 @@ textarea{width:100%;font:inherit;padding:10px;border-radius:12px;border:1px soli
   <main id="main"></main>
 </div>
 <div id="stationHost"></div><div id="modalHost"></div>
+</div>
 <script src="../data.js"></script>
 <script>
 // ===== сақтау =====
@@ -328,6 +343,10 @@ function inlineSvg() { document.querySelectorAll(".dwrap[data-d]").forEach(w => 
 function confetti() { const c = ["#1e6fd9", "#21a0e8", "#14a46c", "#ffd23f", "#7b4fc9", "#ff7a59"]; for (let i = 0; i < 60; i++) { const d = document.createElement("div"); d.className = "conf"; d.style.left = Math.random() * 100 + "vw"; d.style.background = c[i % 6]; d.style.animationDelay = Math.random() * .5 + "s"; document.body.appendChild(d); setTimeout(() => d.remove(), 2500); } }
 function beep(ok) { try { const a = new (window.AudioContext || window.webkitAudioContext)(); const o = a.createOscillator(), g = a.createGain(); o.connect(g); g.connect(a.destination); g.gain.value = .12; (ok ? [523, 659, 784] : [300, 220]).forEach((f, i) => o.frequency.setValueAtTime(f, a.currentTime + i * .12)); o.start(); o.stop(a.currentTime + .45); } catch (e) {} }
 go(cur);
+</script>
+<script>
+(function(){function fit(){var f=document.getElementById('frame');if(!f)return;var W=1600,H=900,z=Math.min(innerWidth/W,innerHeight/H);f.style.transform='scale('+z+')';f.style.left=Math.max(0,(innerWidth-W*z)/2)+'px';f.style.top=Math.max(0,(innerHeight-H*z)/2)+'px';}
+addEventListener('resize',fit);addEventListener('load',fit);fit();})();
 </script>
 </body>
 </html>

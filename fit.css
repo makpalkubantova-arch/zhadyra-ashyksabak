@@ -1,0 +1,41 @@
+/* 16:9 — сайт кез келген экранға 1600×900 жақтау болып сыяды */
+html,body{height:100%!important;overflow:hidden!important;margin:0}
+body{background:#082848!important;display:block!important;min-height:0!important}
+body:before{display:none!important}
+#frame{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;display:flex;flex-direction:column;
+  background:#dff3f6 url("bg.jpg") center/cover no-repeat}
+#frame:before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,rgba(237,250,255,.6),rgba(234,247,249,.4) 48%,rgba(236,245,255,.6));pointer-events:none;z-index:0}
+#frame>.top{position:relative!important;flex:none}
+#frame>.topic{flex:none;margin:10px auto 0!important;max-width:1540px!important;width:calc(100% - 40px)!important;padding:8px 18px!important;font-size:18px!important}
+#frame>main{flex:1;overflow:auto;max-width:1560px!important;padding:12px 24px 90px!important;margin:0 auto;width:100%}
+#frame>.bottom,.tamshy,.modal,.conf,.bubbles span{position:absolute!important}
+.modal{inset:0}
+.bubbles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.shead{padding:12px 20px 8px!important;margin-bottom:12px!important}
+.shead h2{font-size:28px!important}
+/* бір экранға сыю үшін ықшамдау */
+#frame>main{padding-bottom:78px!important}
+.qgrid .drop{height:150px!important}.qf .qt{font-size:15px!important}
+.goalbox{margin-top:12px!important;padding:12px 18px!important;font-size:21px!important}
+.reveal{padding:12px 18px!important;font-size:18px!important;margin-top:10px!important}
+.mg{font-size:19px!important}
+.grid3[style*="3fr 2fr"]{grid-template-columns:2.3fr 1fr!important}
+.qa{padding:9px 0!important;font-size:17px!important}
+.spk{padding:16px 20px!important;min-height:0!important}
+.spkimg .dwrap svg,.spkimg .dwrap img{max-height:470px;object-fit:contain}
+.spkimg .pic{min-height:420px!important}
+.spk ol{font-size:20px!important;line-height:1.6!important}
+.ckbox{padding:12px 14px!important}
+.ckbox table th,.ckbox table td{font-size:14.5px!important;padding:7px 10px!important}
+.steps{margin:6px 0 10px!important}.steps div{padding:9px!important;font-size:16px!important}
+.sgrid{grid-template-columns:repeat(6,1fr)!important;gap:6px!important}
+.scell{padding:6px 8px!important;font-size:13px!important}
+.podium{margin:0 0 10px!important}.pod{width:170px!important}.pod .nm{font-size:16px!important}
+.p1 .bar{height:120px!important}.p2 .bar{height:95px!important}.p3 .bar{height:75px!important}.pod .bar{font-size:30px!important}
+.rankcols{columns:3!important}.rank{padding:6px 12px!important;font-size:16px!important;margin-bottom:5px!important;grid-template-columns:40px 1fr 70px!important}
+.fbc{padding:10px!important}.fbc .ic{font-size:32px!important}.fbc .lb{font-size:17px!important;margin:2px 0!important}.fbc .cnt{font-size:30px!important}
+.fb{margin-top:6px!important;gap:10px!important}
+#frame main .card{padding:14px 18px!important}
+.video{aspect-ratio:auto!important;height:480px}
+.spkimg .dwrap svg,.spkimg .dwrap img{max-height:410px!important}.spkimg .pic{min-height:380px!important}
+#frame main .card[style*="margin-bottom:14px"]{margin-bottom:8px!important}
