@@ -22,8 +22,8 @@ const saveState = () => store.set("state", state);
 // ===== таймер =====
 let timerInt = null;
 function timerHTML(sec) {
-  return `<div class="timer" id="timer" data-sec="${sec}"><span class="t">${fmt(sec)}</span>
-  <button onclick="tStart()">▶</button><button onclick="tPause()">⏸</button><button onclick="tReset()">↺</button></div>`;
+  return `<div class="wt ${sec <= 30 ? "sm" : ""}" id="timer" data-sec="${sec}"><div class="wt-drop"><div class="wt-water" style="height:100%"><i></i></div><span class="t">${fmt(sec)}</span><small>⏳ таймер</small></div>
+  <div class="wt-btns"><button onclick="tStart()">▶ Бастау</button><button onclick="tPause()">⏸ Тоқтату</button><button onclick="tReset()">↺ Қайта</button></div></div>`;
 }
 function fmt(s) { return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); }
 let tLeft = 0;
@@ -33,12 +33,13 @@ function tStart() {
   timerInt = setInterval(() => {
     tLeft = Math.max(0, tLeft - 1);
     const el = $("#timer"); if (!el) { clearInterval(timerInt); timerInt = null; return; }
-    el.querySelector(".t").textContent = fmt(tLeft);
+    el.querySelector(".t").textContent = fmt(tLeft); wtSet(el);
     if (tLeft === 0) { clearInterval(timerInt); timerInt = null; el.classList.add("end"); beep(); if (window.onTimerEnd) window.onTimerEnd(); }
   }, 1000);
 }
 function tPause() { clearInterval(timerInt); timerInt = null; }
-function tReset() { tPause(); const el = $("#timer"); tLeft = +el.dataset.sec; el.classList.remove("end"); el.querySelector(".t").textContent = fmt(tLeft); }
+function tReset() { tPause(); const el = $("#timer"); tLeft = +el.dataset.sec; el.classList.remove("end"); el.querySelector(".t").textContent = fmt(tLeft); wtSet(el); }
+function wtSet(el) { const w = el.querySelector(".wt-water"); if (w) w.style.height = (100 * tLeft / +el.dataset.sec) + "%"; el.classList.toggle("low", tLeft <= 10 && tLeft > 0); }
 function beep() { try { const c = new (window.AudioContext || window.webkitAudioContext)(); const o = c.createOscillator(); o.frequency.value = 880; o.connect(c.destination); o.start(); setTimeout(() => { o.stop(); c.close(); }, 700); } catch (e) {} }
 
 // ===== 1 балл беру (кім жауап берді?) =====
@@ -206,7 +207,7 @@ function gAnswer(k) {
 }
 function gNext() { if (gq < BOARD_Q.length - 1) { gq++; gAns = null; gWho = null; } go(cur); }
 function giveQuick(i, el) { S[i].st = 1; saveS(); el.classList.add("given"); el.textContent = "✓ " + S[i].name; el.disabled = true; }
-function restoreTimer(left, run) { const el = $("#timer"); if (!el) return; tLeft = left; el.querySelector(".t").textContent = fmt(left); if (run) tStart(); }
+function restoreTimer(left, run) { const el = $("#timer"); if (!el) return; tLeft = left; el.querySelector(".t").textContent = fmt(left); wtSet(el); if (run) tStart(); }
 function sfx(ok) { try { const c = new (window.AudioContext || window.webkitAudioContext)(); const o = c.createOscillator(); const g = c.createGain(); o.connect(g); g.connect(c.destination);
   const f = ok ? [523, 659, 784] : [300, 220]; f.forEach((v, i) => o.frequency.setValueAtTime(v, c.currentTime + i * 0.12)); g.gain.value = 0.15; o.start(); o.stop(c.currentTime + f.length * 0.12 + 0.1); } catch (e) {} }
 

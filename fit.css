@@ -51,3 +51,21 @@ body:before{display:none!important}
 .tp-desc{background:#eef6ff;border-radius:16px;padding:12px 16px;font-size:18px}
 .tp-desc ul{margin:6px 0 0;padding-left:20px;line-height:1.55}
 .tp-go{align-self:flex-start;font-size:17px!important;padding:13px 20px!important;margin-top:auto}
+
+/* ===== Су таймері ===== */
+.wt{display:inline-flex;align-items:center;gap:14px}
+.wt-drop{position:relative;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffffff,#dff1ff);border:6px solid #fff;box-shadow:0 10px 26px rgba(0,60,120,.25),inset 0 0 0 3px #bfe0f7;overflow:hidden;flex:none}
+.wt-water{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#5fc6f5,#1e6fd9);transition:height 1s linear}
+.wt-water i{position:absolute;left:0;top:-14px;width:200%;height:16px;background:radial-gradient(circle at 10px -4px,transparent 12px,#5fc6f5 13px) 0 0/20px 16px repeat-x;animation:wtw 2s linear infinite}
+@keyframes wtw{to{transform:translateX(-20px)}}
+.wt-drop .t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#0b2a55;font-variant-numeric:tabular-nums;text-shadow:0 0 6px #fff,0 0 12px #fff}
+.wt-drop small{position:absolute;left:0;right:0;bottom:26px;text-align:center;font-size:11px;font-weight:800;color:#0b2a55;text-shadow:0 0 4px #fff;letter-spacing:.05em}
+.wt-btns{display:flex;flex-direction:column;gap:6px}
+.wt-btns button{border:0;border-radius:12px;padding:8px 12px;font-weight:800;font-size:14px;background:#fff;color:#1e6fd9;box-shadow:0 3px 10px rgba(0,60,120,.15);cursor:pointer;text-align:left}
+.wt-btns button:first-child{background:linear-gradient(135deg,#14a46c,#3ccf8e);color:#fff}
+.wt.low .wt-drop{animation:wtp .8s infinite}.wt.low .wt-water{background:linear-gradient(180deg,#ffb36b,#e2483d)}
+.wt.end .wt-drop .t{color:#e2483d}
+@keyframes wtp{50%{transform:scale(1.06)}}
+.wt.sm .wt-drop{width:92px;height:92px;border-width:4px}.wt.sm .t{font-size:24px}.wt.sm small{display:none}
+.wt.sm .wt-btns{flex-direction:row}.wt.sm .wt-btns button{padding:6px 9px;font-size:12px}
+.tp-timer .timer{transform:none!important}
