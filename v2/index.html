@@ -170,7 +170,8 @@ const SCR = [
   { i: "🎬", t: "Бейне", r: sVideo },
   { i: "🗺️", t: "Саяхат", r: sMap },
   { i: "📄", t: "Парақ", r: sSheet },
-  { i: "🏁", t: "Мәре", r: sFinish }
+  { i: "🏁", t: "Мәре", r: sFinish },
+  { i: "💧", t: "Кері байланыс", r: sFeedback }
 ];
 let cur = load("cur", 0);
 function go(i) {
@@ -275,13 +276,20 @@ function sFinish() {
   const crit = `<div class="tabs">${CRITERIA.map(c => `<button class="${finTab === c.id ? "on" : ""}" style="--c:#1e6fd9" onclick="finTab='${c.id}';go(cur)">${c.name} (0–${c.max})</button>`).join("")}<button class="${finTab === "t" ? "on" : ""}" style="--c:#14a46c" onclick="finTab='t';go(cur)">🏆 Барлығы / 10</button></div>
    ${finTab === "t" ? `<div class="sgrid">${S.slice().sort((a, b) => tot(b) - tot(a)).map((s, k) => `<div class="scell" style="--c:${G(s.g).color}">${k < 3 ? ["🥇", "🥈", "🥉"][k] : k + 1 + "."} ${esc(s.name)}<div style="font-size:20px;color:#1e6fd9;font-weight:900">${tot(s)} / 10</div></div>`).join("")}</div>`
      : scoreGrid(finTab, CRITERIA.find(c => c.id === finTab).max)}`;
-  const opts = [["🌊", "Өзендей ағып тұрмын", "#1e6fd9"], ["🏞️", "Көлдей толқып тұрмын", "#15a06c"], ["🌾", "Батпақта тұрып қалдым", "#8a6a3b"]];
-  const fq = ["💧 Құрлық сулары қалай пайда болады?", "🏭 Құрлық сулары адамға не береді?"];
-  return `<div class="panel"><div class="chip">Нәтиже · Әдіс: «Тамшының жолы»</div><h2>Мәре! Топтардың ұпайы</h2>${team}
-   <h3 style="margin:8px 0">Жеке бағалау (10 балл)</h3>${crit}
-   <h3 style="margin:16px 0 4px">Кері байланыс: тамшың қайда жетті?</h3>
-   ${fq.map((q, gi) => `<b>${q}</b><div class="fb" style="margin-bottom:10px">${opts.map((o, k) => `<div class="fbc" style="background:${o[2]}"><div style="font-size:30px">${o[0]}</div><b>${o[1]}</b><div class="c">${ST.fb[gi][k]}</div><button onclick="ST.fb[${gi}][${k}]=Math.max(0,ST.fb[${gi}][${k}]-1);persist();go(cur)">−</button> <button onclick="ST.fb[${gi}][${k}]++;persist();go(cur)">+</button></div>`).join("")}</div>`).join("")}
-   <div style="background:#eef6ff;border-radius:14px;padding:12px 16px;font-size:17px"><b>Үй тапсырмасы:</b> ${HOMEWORK}</div></div>`;
+  return `<div class="panel"><div class="chip">Нәтиже</div><h2>Мәре! Топтардың ұпайы</h2>${team}
+   <h3 style="margin:8px 0">Жеке бағалау (10 балл)</h3>${crit}</div>`;
+}
+
+// 7. Кері байланыс — «Тамшының жолы»
+function sFeedback() {
+  const Q = [
+    { h: "💧 Құрлық сулары қалай пайда болады?", o: [["🌊", "Өзендей ағып тұрмын", "#1e6fd9", "Бес судың қалай пайда болатынын өзім түсіндіріп бере аламын"], ["🏞️", "Көлдей толқып тұрмын", "#15a06c", "Көбін білемін, бірақ біреуі-екеуі әлі шатасады"], ["🌾", "Батпақта тұрып қалдым", "#8a6a3b", "Қалай пайда болатынын тағы бір рет оқуым керек"]] },
+    { h: "🏭 Құрлық сулары адамға не береді?", o: [["🌊", "Өзендей ағып тұрмын", "#1e6fd9", "Әр суға шаруашылықтан мысал келтіре аламын"], ["🏞️", "Көлдей толқып тұрмын", "#15a06c", "Кейбір суларға ғана мысал таба аламын"], ["🌾", "Батпақта тұрып қалдым", "#8a6a3b", "Мысал келтіру маған әлі қиын"]] }
+  ];
+  return `<div class="panel"><div class="chip">Әдіс: «Тамшының жолы»</div><h2>Кері байланыс: тамшың қайда жетті?</h2>
+   <div class="sub">Карточкаңды сәйкес бағанға жапсырып, бір сөйлеммен себебін айт. Мұғалім санын белгілейді.</div>
+   ${Q.map((q, gi) => `<div style="font-size:21px;font-weight:900;margin:12px 0 4px">${q.h}</div><div class="fb">${q.o.map((o, k) => `<div class="fbc" style="background:${o[2]}"><div style="font-size:34px">${o[0]}</div><b style="font-size:18px">${o[1]}</b><div style="font-size:14.5px;opacity:.95;margin:4px 0">«${o[3]}»</div><div class="c">${ST.fb[gi][k]}</div><button onclick="ST.fb[${gi}][${k}]=Math.max(0,ST.fb[${gi}][${k}]-1);persist();go(cur)">−</button> <button onclick="ST.fb[${gi}][${k}]++;persist();go(cur)">+</button></div>`).join("")}</div>`).join("")}
+   <div style="background:#eef6ff;border-radius:14px;padding:12px 16px;font-size:17px;margin-top:14px"><b>📚 Үй тапсырмасы:</b> ${HOMEWORK}</div></div>`;
 }
 
 // ===== таймер =====
