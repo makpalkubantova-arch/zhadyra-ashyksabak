@@ -226,42 +226,76 @@ function rSpeakers() {
     </div></div>`;
 }
 
-// 5б. Топтық тапсырма
-let grTab = -1;
-function rGroup() {
-  const body = grTab < 0 ? `<div class="grid5">${GROUPS.map((g, k) => `<div class="card gimg" style="text-align:center;border-top:6px solid ${g.color}"><div class="pic" style="background-image:url(${g.img})"><span>✉️</span></div><b style="font-size:20px;color:${g.color}">${g.icon} ${g.name}</b><div class="sub" style="margin:6px 0 0">6 карточка · 2-еуі артық</div></div>`).join("")}</div>`
-    : (() => { const g = GROUPS[grTab], c = GROUP_TASK.cards[g.id]; return `<div class="spk" style="background:linear-gradient(90deg,${g.light}f2,${g.light}e6),url(${g.img}) center/cover;border:2px solid ${g.color}">
-      <h2 style="color:${g.color}">${g.icon} ${g.name}</h2>
-      <div class="grid3"><div class="card"><b>🧭 Қалыптасуы</b><ul>${c.f.map(x => `<li class="ans">${x}</li>`).join("")}</ul></div>
-      <div class="card"><b>🏭 Шаруашылық маңызы</b><ul>${c.u.map(x => `<li class="ans">${x}</li>`).join("")}</ul></div>
-      <div class="card"><b>✖ Артық карточкалар</b><ul>${c.x.map(x => `<li style="color:var(--bad);text-decoration:line-through">${x}</li>`).join("")}</ul></div></div>
-      <div class="row" style="margin-top:12px"><span class="method" style="margin:0">Дескриптор: ${GROUP_TASK.descr}</span><button class="btn ok" onclick="giveGroup('${g.id}')">«${g.name}» тобына +1 балл</button></div></div>`; })();
-  return head(GROUP_TASK.title, GROUP_TASK.text + " Тексеру: топтар бір-бірінің парағын тексереді, сосын мұғалім.") +
-    `<div class="row" style="margin-bottom:14px">${timerHTML(180)}<span style="font-weight:700">Дескрипторды ашу:</span>
-     ${GROUPS.map((g, k) => `<button class="btn" style="background:${g.color}" onclick="grTab=${k};go(cur)">${g.icon} ${g.name}</button>`).join("")}</div>${body}`;
-}
-function giveGroup(id) { S.forEach(s => { if (s.g === id) s.gr = 1; }); saveS(); confetti(); }
-
-// ===== Әр тапсырмадан кейінгі тексеру панелі (өзін-өзі → көршісі → мұғалім) =====
+// ===== Тапсырма беті: 1) орындау (сурет, тапсырма, таймер, дескриптор) → 2) тексеру (жауап, тексеру, балл) =====
 let ckStep = {};
-function checkPanel(key, crit, answersHtml) {
-  const c = CRITERIA.find(x => x.id === crit); const st = ckStep[key] === undefined ? -1 : ckStep[key];
+const ART = {
+  book: `<svg viewBox="0 0 400 300" class="art"><defs><linearGradient id="bk1" x1="0" x2="1"><stop offset="0" stop-color="#1e6fd9"/><stop offset="1" stop-color="#21a0e8"/></linearGradient></defs>
+    <ellipse cx="200" cy="270" rx="170" ry="16" fill="#0b2a55" opacity=".12"/>
+    <path d="M40 80 L190 60 L190 250 L40 265Z" fill="#fff" stroke="#c9d9ea" stroke-width="3"/><path d="M360 80 L210 60 L210 250 L360 265Z" fill="#fff" stroke="#c9d9ea" stroke-width="3"/>
+    <path d="M190 60 Q200 52 210 60 L210 250 Q200 244 190 250Z" fill="url(#bk1)"/>
+    <g stroke="#9db7d3" stroke-width="5" stroke-linecap="round"><path d="M62 100 L170 88 M62 125 L170 113 M62 150 L150 140 M62 175 L170 163 M62 200 L140 192"/></g>
+    <rect x="232" y="92" width="104" height="70" rx="8" fill="#bfe3f7"/><path d="M240 150 L265 118 L285 138 L300 122 L330 150Z" fill="#5fae4b"/><circle cx="315" cy="108" r="8" fill="#ffd23f"/>
+    <g stroke="#9db7d3" stroke-width="5" stroke-linecap="round"><path d="M232 185 L336 195 M232 210 L320 218"/></g>
+    <g transform="translate(300,200) rotate(-35)"><rect width="110" height="14" rx="3" fill="#f2a900"/><path d="M110 0 L130 7 L110 14Z" fill="#f5d0a0"/><rect x="-14" width="14" height="14" rx="3" fill="#e2483d"/></g>
+    <text x="200" y="40" text-anchor="middle" font-size="26" font-weight="800" fill="#0b4fb0">📖 Оқулық + ✏️ Дәптер</text></svg>`,
+  sheet: `<svg viewBox="0 0 400 300" class="art"><ellipse cx="200" cy="272" rx="150" ry="14" fill="#0b2a55" opacity=".12"/>
+    <rect x="95" y="30" width="210" height="240" rx="12" fill="#fff" stroke="#c9d9ea" stroke-width="3" transform="rotate(-6 200 150)"/>
+    <rect x="105" y="25" width="210" height="240" rx="12" fill="#fff" stroke="#9db7d3" stroke-width="3"/>
+    <rect x="105" y="25" width="210" height="46" rx="12" fill="#1e6fd9"/><text x="210" y="56" text-anchor="middle" fill="#fff" font-size="20" font-weight="800">Жұмыс парағы</text>
+    ${[0,1,2,3,4].map(k => `<circle cx="132" cy="${100+k*34}" r="11" fill="#1e6fd9"/><text x="132" y="${105+k*34}" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">${k+1}</text><path d="M152 ${100+k*34} L292 ${100+k*34}" stroke="#bcd6f2" stroke-width="5" stroke-linecap="round" stroke-dasharray="${k<3?'0':'8 7'}"/>`).join("")}
+    <g transform="translate(280,215) rotate(-40)"><rect width="100" height="13" rx="3" fill="#14a46c"/><path d="M100 0 L118 6.5 L100 13Z" fill="#f5d0a0"/></g></svg>`,
+  group: `<svg viewBox="0 0 400 300" class="art"><ellipse cx="200" cy="272" rx="160" ry="14" fill="#0b2a55" opacity=".12"/>
+    <rect x="70" y="120" width="260" height="150" rx="10" fill="#f6e3b4" stroke="#d8b36a" stroke-width="3"/><path d="M70 120 L200 200 L330 120" fill="#efd395" stroke="#d8b36a" stroke-width="3"/>
+    ${[["#1e6fd9",-18,100,40],["#15a06c",-6,150,28],["#2ea3c8",6,200,24],["#8a6a3b",16,250,32]].map(c => `<rect x="${c[2]-30}" y="${c[3]}" width="70" height="95" rx="8" fill="#fff" stroke="${c[0]}" stroke-width="4" transform="rotate(${c[1]} ${c[2]} 100)"/>`).join("")}
+    <text x="200" y="250" text-anchor="middle" font-size="40">✉️</text></svg>`
+};
+function taskPage(key, o, answersHtml, crit) {
+  const st = ckStep[key] === undefined ? -1 : ckStep[key];
+  if (st < 0) {
+    window.onTimerEnd = () => { ckStep[key] = 0; tamshy("joy", "Уақыт бітті! Тексереміз ✅"); setTimeout(() => go(cur), 1200); };
+    return `<div class="tp-work"><div class="tp-art">${ART[o.art]}</div>
+      <div class="tp-right"><div class="tp-badge">🔒 Орындау кезеңі · жауаптар жасырулы</div>
+        <div class="tp-timer">${timerHTML(o.sec)}</div>
+        <div class="tp-task">${o.text}</div>
+        ${o.chips ? `<div class="row" style="margin:8px 0">${o.chips}</div>` : ""}
+        <div class="tp-desc"><b>📋 Дескриптор (бағалау критерийі)</b><ul>${o.descr.map(d => `<li>${d}</li>`).join("")}</ul></div>
+        <button class="btn ok tp-go" onclick="ckStep['${key}']=0;go(cur)">✅ Уақыт бітті — жауаптар мен тексеру →</button></div></div>`;
+  }
+  const c = CRITERIA.find(x => x.id === crit);
   const steps = ["1. 🙋 Өзін-өзі тексереді", "2. 🤝 Көршісімен алмасып тексереді", "3. 👩‍🏫 Мұғалім баллды қояды"];
   const grid = `<div class="sgrid">${S.map((s, i) => `<div class="scell"><span class="dot" style="background:${G(s.g).color}"></span><b>${esc(s.name)}</b>
      <div class="pick">${Array.from({ length: c.max + 1 }, (_, v) => `<button class="${(s[crit] || 0) === v ? "on" : ""}" onclick="setScore(${i},'${crit}',${v})">${v}</button>`).join("")}</div></div>`).join("")}</div>`;
-  return `<div class="ckbox"><div class="ckhead">✅ Тексеру · <span>${c.name}: 0–${c.max} балл</span> · <small>${c.d}</small></div>
+  return `<div class="ckbox"><div class="row" style="justify-content:space-between"><div class="ckhead">✅ Тексеру · <span>${c.name}: 0–${c.max} балл</span></div>
+      <button class="btn ghost" onclick="ckStep['${key}']=-1;go(cur)">← Тапсырмаға оралу</button></div>
     <div class="steps">${steps.map((s, k) => `<div class="${k === st ? "on" : ""}" onclick="ckStep['${key}']=${k};go(cur)" style="cursor:pointer">${s}</div>`).join("")}</div>
-    ${st < 0 ? `<div class="hidebox">🔒 Оқушылар тапсырманы орындап жатыр — жауаптар жасырулы.<br><button class="btn ok" onclick="ckStep['${key}']=0;go(cur)">✅ Уақыт бітті — дескрипторды ашу</button></div>` : st < 2 ? answersHtml : grid}</div>`;
+    ${st < 2 ? answersHtml : grid}</div>`;
 }
+function checkPanel(key, crit, answersHtml) { return taskPage(key, { art: "book", sec: 180, text: "", descr: [] }, answersHtml, crit); }
+
+// 5б. Топтық тапсырма (ТЖ)
+let grTab = 0;
+function rGroup() {
+  const g = GROUPS[grTab], c = GROUP_TASK.cards[g.id];
+  const ans = `<div class="tabs">${GROUPS.map((x, k) => `<button class="${k === grTab ? "on" : ""}" style="background:${x.color}" onclick="grTab=${k};go(cur)">${x.icon} ${x.name}</button>`).join("")}</div>
+    <div class="grid3"><div class="card"><b>🧭 Қалыптасуы</b><ul>${c.f.map(x => `<li class="ans">${x}</li>`).join("")}</ul></div>
+    <div class="card"><b>🏭 Шаруашылық маңызы</b><ul>${c.u.map(x => `<li class="ans">${x}</li>`).join("")}</ul></div>
+    <div class="card"><b>✖ Артық карточкалар</b><ul>${c.x.map(x => `<li style="color:var(--bad);text-decoration:line-through">${x}</li>`).join("")}</ul></div></div>
+    <div class="row" style="margin-top:10px"><button class="btn ok" onclick="giveGroup('${g.id}')">«${g.name}» тобы дұрыс орындады — әр мүшесіне +1 балл</button></div>`;
+  return head(GROUP_TASK.title, "Топтық жұмыс (ТЖ). Топтар бір-бірінің парағын тексереді, сосын мұғалім балл қояды.") +
+    taskPage("gr", { art: "group", sec: 180, text: GROUP_TASK.text,
+      chips: GROUPS.map(x => `<span class="gchip" style="background:${x.color};font-size:14px;padding:6px 12px;animation:none">${x.icon} ${x.name}</span>`).join(""),
+      descr: ["Өз суына қатысты 4 карточканы таңдайды", "Карточкаларды «Қалыптасуы» және «Шаруашылық маңызы» бағандарына дұрыс жапсырады", "2 артық карточканы анықтайды", "Дұрыс орындаса — топтың әр мүшесіне <b>1 балл</b>"] }, ans, "gr");
+}
+function giveGroup(id) { S.forEach(s => { if (s.g === id) s.gr = 1; }); saveS(); confetti(); }
 
 // 6. Оқулықпен жұмыс
 function rBook() {
   const ans = `<table><tr><th style="width:15%">Топ</th>${BOOK_TASK.cols.map(c => `<th>${c}</th>`).join("")}</tr>
-    ${GROUPS.map(g => { const r = BOOK_TASK.rows[g.id]; return `<tr><td><b style="color:${g.color}">${g.icon} ${g.name}</b><br><small>${r[0]}-бет</small></td><td class="ans">${r[1]}</td><td class="ans">${r[2]}</td><td class="ans">${r[3]}</td></tr>`; }).join("")}
-    <tr><td colspan="3" style="text-align:right"><b>Әр баған — 1 балл · Барлығы</b></td><td><b>3 балл</b></td></tr></table>`;
-  return head(BOOK_TASK.title, BOOK_TASK.text) +
-    `<div class="row" style="margin-bottom:14px">${timerHTML(180)}<div class="row">${GROUPS.map(g => `<span class="gchip" style="background:${g.color};font-size:15px;padding:8px 14px;animation:none">${g.icon} ${g.name} — ${BOOK_TASK.rows[g.id][0]}-бет</span>`).join("")}</div></div>
-    ${checkPanel("bk", "bk", ans)}`;
+    ${GROUPS.map(g => { const r = BOOK_TASK.rows[g.id]; return `<tr><td><b style="color:${g.color}">${g.icon} ${g.name}</b><br><small>${r[0]}-бет</small></td><td class="ans">${r[1]}</td><td class="ans">${r[2]}</td><td class="ans">${r[3]}</td></tr>`; }).join("")}</table>`;
+  return head(BOOK_TASK.title, "Әр топ өз суын оқулықтан зерттеп, дәптерге жазады.") +
+    taskPage("bk", { art: "book", sec: 180, text: BOOK_TASK.text,
+      chips: GROUPS.map(g => `<span class="gchip" style="background:${g.color};font-size:14px;padding:6px 12px;animation:none">${g.icon} ${g.name} — ${BOOK_TASK.rows[g.id][0]}-бет</span>`).join(""),
+      descr: ["① Шаруашылықта пайдаланылуына 2 мысал жазады — <b>1 балл</b>", "② Қай қасиеті оны пайдалы ететінін түсіндіреді — <b>1 балл</b>", "③ Оқулықтан бір қызық дерек табады — <b>1 балл</b>"] }, ans, "bk");
 }
 
 // 7. Жұмыс парақтары
@@ -269,10 +303,12 @@ let wsVar = 0;
 function rWorksheet() {
   const w = WORKSHEETS[wsVar];
   const ans = `<div class="tabs">${WORKSHEETS.map((x, k) => `<button class="${k === wsVar ? "on" : ""}" style="background:var(--blue)" onclick="wsVar=${k};go(cur)">${x.n}-нұсқа</button>`).join("")}</div>
-    <table><tr><th style="width:5%">№</th><th style="width:42%">Тапсырма</th><th>Дескриптор (дұрыс жауап)</th><th style="width:7%">Балл</th></tr>
+    <table><tr><th style="width:5%">№</th><th style="width:42%">Тапсырма</th><th>Дұрыс жауап</th><th style="width:7%">Балл</th></tr>
     ${w.tasks.map((t, i) => `<tr><td>${i + 1}</td><td>${t[0]}</td><td class="ans">${t[1]}</td><td>1</td></tr>`).join("")}</table>`;
-  return head("Жұмыс парақтары", "Әр оқушыда әртүрлі нұсқа. 5 тапсырма — 5 балл. Уақыт біткенде қалам қойылады да, бірден тексереміз.") +
-    `<div class="row" style="margin-bottom:14px">${timerHTML(360)}</div>${checkPanel("ws", "ws", ans)}`;
+  return head("Жұмыс парағы", "Әр оқушыда әртүрлі нұсқа (саралап оқыту). Уақыт біткенде қалам қойылады, сосын тексереміз.") +
+    taskPage("ws", { art: "sheet", sec: 360, text: "Жұмыс парағындағы 5 тапсырманы жеке орында. Құрлық суларының <b>қалай пайда болатынын</b> және <b>шаруашылық маңызын</b> жаз.",
+      chips: WORKSHEETS.map(x => `<span class="gchip" style="background:#1e6fd9;font-size:14px;padding:6px 12px;animation:none">📄 ${x.n}-нұсқа</span>`).join(""),
+      descr: ["Әр тапсырмаға толық жауап береді — <b>1 балл</b>", "«2 мысал» сұралса — екеуі де дұрыс болғанда ғана 1 балл", "Барлығы — <b>5 балл</b>"] }, ans, "ws");
 }
 
 // бұрынғы жалпы тексеру беті (енді қолданылмайды)
