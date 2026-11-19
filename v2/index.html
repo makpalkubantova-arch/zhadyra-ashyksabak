@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тамшының саяхаты — Құрлық сулары</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--navy:#0b2a55;--blue:#1e6fd9;--ok:#14a46c;--bad:#e2483d;--ink:#13233a;--muted:#5d6f86;--glass:rgba(255,255,255,.9)}
+html,body{margin:0;height:100%}
+body{font-family:Montserrat,"Segoe UI",Arial,sans-serif;color:var(--ink);background:#0b2a55 url(../img/muzdyk.jpg) center/cover fixed;overflow:hidden}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(135deg,rgba(6,30,70,.82),rgba(10,70,120,.55));z-index:0}
+button{font:inherit;cursor:pointer}
+.app{position:relative;z-index:1;display:grid;grid-template-columns:96px 1fr;grid-template-rows:auto 1fr;height:100vh}
+/* жоғарғы панель */
+.top{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:10px 18px;color:#fff}
+.logo{font-weight:900;font-size:20px;white-space:nowrap}.logo span{color:#7fd3ff}
+.topic{flex:1;font-size:15px;font-weight:600;opacity:.9;line-height:1.3}
+.teams{display:flex;gap:6px}
+.team{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:2px solid var(--c);border-radius:14px;padding:5px 10px;font-weight:800;font-size:14px}
+.team b{background:var(--c);border-radius:8px;padding:1px 8px;min-width:28px;text-align:center;transition:.3s}
+.team.bump b{transform:scale(1.4)}
+.tbtn{border:0;background:rgba(255,255,255,.15);color:#fff;border-radius:12px;padding:8px 12px;font-size:17px}
+/* сол жақ рельс */
+.rail{display:flex;flex-direction:column;gap:8px;padding:10px 12px}
+.rail button{border:0;background:rgba(255,255,255,.1);color:#cfe3ff;border-radius:18px;padding:10px 4px;font-size:11.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.25s}
+.rail button i{font-style:normal;font-size:24px}
+.rail button.on{background:#fff;color:var(--navy);box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.rail button.done:not(.on){color:#fff;background:rgba(127,211,255,.25)}
+main{overflow:auto;padding:6px 22px 22px 6px}
+.screen{animation:in .5s}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.panel{background:var(--glass);border-radius:26px;padding:22px 26px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+h2{margin:0 0 4px;font-size:30px;font-weight:900}
+.chip{display:inline-block;background:linear-gradient(135deg,#ffe9a8,#ffd23f);color:#5a4300;border-radius:20px;padding:4px 12px;font-size:13px;font-weight:800;margin-bottom:6px}
+.sub{color:var(--muted);font-size:16px;margin-bottom:14px}
+.btn{border:0;background:linear-gradient(135deg,#1e6fd9,#21a0e8);color:#fff;padding:11px 18px;border-radius:14px;font-weight:800;font-size:15px;box-shadow:0 6px 16px rgba(30,111,217,.3)}
+.btn.ok{background:linear-gradient(135deg,#14a46c,#3ccf8e)}.btn.ghost{background:#fff;color:var(--blue);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hidden{display:none!important}
+/* 1. Басы */
+.hero{position:relative;border-radius:26px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.hero img{width:100%;display:block}
+.hero .ttl{position:absolute;left:0;right:0;top:0;padding:26px 30px;background:linear-gradient(180deg,rgba(6,30,70,.85),transparent);color:#fff}
+.hero .ttl h1{margin:0;font-size:40px;font-weight:900;line-height:1.15}
+.hero .ttl p{margin:6px 0 0;font-size:17px;opacity:.9}
+.goals{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.goal{background:var(--glass);border-radius:20px;padding:16px 20px;font-size:20px;font-weight:600;line-height:1.5;border-left:8px solid var(--blue)}
+.goal:last-child{border-left-color:var(--ok)}
+.goal b{display:block;font-size:13px;color:var(--blue);letter-spacing:.06em}
+.mw.gone{color:#9fb3c8}
+/* 2. Дәйексөз */
+.qgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.qc{perspective:900px;height:190px;cursor:pointer}
+.qc .in{position:relative;width:100%;height:100%;transition:transform .8s cubic-bezier(.3,1.4,.5,1);transform-style:preserve-3d}
+.qc.open .in{transform:rotateY(180deg)}
+.qc .f,.qc .b{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:14px;display:flex;flex-direction:column;justify-content:center;box-shadow:0 10px 24px rgba(0,0,0,.2)}
+.qc .f{background:#fff}.qc .f .n{position:absolute;top:10px;left:10px;width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+.qc .f .q{font-style:italic;font-weight:600;font-size:15.5px;line-height:1.35;text-align:center}.qc .f .a{text-align:center;color:var(--muted);font-size:13px;font-weight:700;margin-top:8px}
+.qc .b{transform:rotateY(180deg);color:#fff;text-align:center;background-size:cover;background-position:center}
+.qc .b .g{font-size:24px;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.5)}.qc .b .w{font-size:14px;font-weight:600;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+/* 4. Карта */
+.map{position:relative;border-radius:26px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35);background:#fff}
+.map img{width:100%;display:block}
+.hs{position:absolute;transform:translate(-50%,-50%);border:0;background:var(--c);color:#fff;width:66px;height:66px;border-radius:50%;font-size:28px;box-shadow:0 0 0 6px rgba(255,255,255,.75),0 10px 22px rgba(0,0,0,.35);animation:pulse 2s infinite}
+.hs.done{animation:none;box-shadow:0 0 0 6px #14a46c,0 10px 22px rgba(0,0,0,.35)}
+.hs span{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#fff;color:var(--navy);font-size:13px;font-weight:900;padding:3px 10px;border-radius:12px;white-space:nowrap}
+.hs .ck{position:absolute;top:-6px;right:-6px;background:#14a46c;border-radius:50%;width:24px;height:24px;font-size:14px;display:flex;align-items:center;justify-content:center}
+@keyframes pulse{50%{box-shadow:0 0 0 14px rgba(255,255,255,.35),0 10px 22px rgba(0,0,0,.35)}}
+/* станция */
+.st-wrap{position:fixed;inset:0;z-index:20;background:rgba(5,20,45,.6);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:20px}
+.st{background:#fff;border-radius:28px;width:min(1320px,100%);max-height:94vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.4);animation:pop .4s}
+@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+.st-head{display:flex;align-items:center;gap:14px;padding:14px 20px;color:#fff;background:linear-gradient(90deg,var(--c),rgba(0,0,0,.2)),var(--img) center/cover}
+.st-head h3{margin:0;font-size:28px;font-weight:900;flex:1;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+.st-body{display:grid;grid-template-columns:1.15fr 1fr;gap:18px;padding:18px}
+.dwrap{border-radius:18px;overflow:hidden;box-shadow:0 8px 22px rgba(0,0,0,.15)}
+.dwrap img,.dwrap svg{width:100%;display:block}
+.diag .st{animation:stIn .7s cubic-bezier(.3,1.4,.5,1) backwards;animation-delay:calc(var(--i) * .8s);transform-box:fill-box;transform-origin:center}
+@keyframes stIn{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+.diag .flow{animation:dash 1s linear infinite}@keyframes dash{to{stroke-dashoffset:-24}}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{border:0;border-radius:12px;padding:9px 14px;font-weight:800;background:#eef4fb;color:var(--muted)}
+.tabs button.on{background:var(--c);color:#fff}
+.facts li{font-size:18px;line-height:1.5;margin-bottom:8px}
+.qq{font-size:22px;font-weight:800;margin:6px 0 12px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{border:0;border-radius:16px;padding:14px;font-size:17px;font-weight:800;color:#fff;background:var(--oc);text-align:left;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+.opt.right{background:#14a46c;box-shadow:0 0 0 5px #fff,0 0 0 9px #14a46c}.opt.wrong{animation:shake .4s;opacity:.8}.opt.dim{opacity:.3}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.who{background:#f3f8ff;border-radius:14px;padding:8px 12px;font-weight:800;margin:10px 0}
+table{border-collapse:separate;border-spacing:0;width:100%;border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+th,td{padding:9px 11px;border-bottom:1px solid #e3ecf6;text-align:left;font-size:15.5px;vertical-align:top}
+th{background:#eef6ff}
+.ans{color:var(--ok);font-weight:700}
+.timer{display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:16px;padding:6px 12px;box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.timer .t{font-size:30px;font-weight:900;color:var(--navy);min-width:96px;text-align:center;font-variant-numeric:tabular-nums}
+.timer.end .t{color:var(--bad)}
+.timer button{border:0;background:#eaf3ff;color:var(--blue);border-radius:9px;padding:6px 10px;font-weight:800}
+.steps{display:flex;gap:8px;margin:10px 0}
+.steps div{flex:1;text-align:center;background:#eef4fb;border-radius:14px;padding:10px;font-weight:800;color:var(--muted);cursor:pointer}
+.steps div.on{background:var(--blue);color:#fff}
+.sgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.scell{background:#fff;border-radius:12px;padding:7px 9px;font-size:13.5px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.08);border-left:5px solid var(--c)}
+.pick{display:flex;gap:3px;margin-top:5px}.pick button{width:27px;height:27px;border-radius:8px;border:1px solid #d6e2ef;background:#fff;font-weight:800;font-size:13px}
+.pick button.on{background:var(--blue);color:#fff;border-color:transparent}
+/* мәре */
+.bars{display:flex;align-items:flex-end;gap:16px;height:220px;padding:10px 0}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar div{width:100%;border-radius:16px 16px 0 0;background:var(--c);display:flex;align-items:flex-start;justify-content:center;color:#fff;font-weight:900;font-size:24px;padding-top:6px;transition:height 1s}
+.bar span{font-weight:800;margin-top:6px}
+.fb{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+.fbc{border-radius:18px;padding:14px;color:#fff;text-align:center}.fbc .c{font-size:34px;font-weight:900}
+.fbc button{border:0;background:rgba(255,255,255,.3);color:#fff;border-radius:9px;width:38px;height:32px;font-weight:900;font-size:18px}
+.conf{position:fixed;top:-20px;width:10px;height:14px;z-index:60;pointer-events:none;animation:fall 1.8s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.6}}
+.modal{position:fixed;inset:0;z-index:40;background:rgba(5,20,45,.6);display:flex;align-items:center;justify-content:center}
+.modal>div{background:#fff;border-radius:24px;padding:24px;width:min(760px,92%);max-height:88vh;overflow:auto}
+textarea{width:100%;font:inherit;padding:10px;border-radius:12px;border:1px solid #d6e2ef}
+.rname{font-size:52px;font-weight:900;text-align:center;margin:20px 0}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="logo">💧 Тамшының <span>саяхаты</span></div>
+    <div class="topic" id="topic"></div>
+    <div class="teams" id="teams"></div>
+    <button class="tbtn" onclick="openRand()" title="Кездейсоқ оқушы">🎲</button>
+    <button class="tbtn" onclick="openRoster()" title="Оқушылар тізімі">⚙</button>
+    <a class="tbtn" href="../print.html" target="_blank" style="text-decoration:none">🖨</a>
+  </div>
+  <nav class="rail" id="rail"></nav>
+  <main id="main"></main>
+</div>
+<div id="stationHost"></div><div id="modalHost"></div>
+<script src="../data.js"></script>
+<script>
+// ===== сақтау =====
+const K = "zh2_";
+const load = (k, d) => { try { const v = localStorage.getItem(K + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+const save = (k, v) => { try { localStorage.setItem(K + k, JSON.stringify(v)); } catch (e) {} };
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const G = id => GROUPS.find(g => g.id === id);
+let S = load("S", null) || (() => { const l = []; let n = 1; GROUPS.forEach(g => { for (let i = 0; i < g.count; i++) l.push({ name: n++ + "-оқушы", g: g.id, st: 0, gr: 0, bk: 0, ws: 0 }); }); return l; })();
+let T = load("T", { ozen: 0, kol: 0, muzdyk: 0, batpak: 0, zherasty: 0 });
+let ST = load("ST", { intro: [], done: {}, ans: {}, fb: [[0, 0, 0], [0, 0, 0]] });
+const persist = () => { save("S", S); save("T", T); save("ST", ST); };
+const tot = s => s.st + s.gr + s.bk + s.ws;
+
+// ===== станция деректері (кітаптан) =====
+const ORDER = ["muzdyk", "ozen", "kol", "batpak", "zherasty"];
+const HOT = { muzdyk: [71, 24], ozen: [62, 50], kol: [40, 58], batpak: [78, 70], zherasty: [86, 88] };
+const FACTS = {
+  muzdyk: ["Мұздық — қатқыл жауын-шашынның жинақталып, тығыздалуынан түзілген қозғалмалы мұз шоғыры (149-бет).", "Қар сызығы экваторда ~5 км, тропикте ~6 км биіктікте, полюсте мұхит деңгейінде (149-бет).", "Мұздықтар 16,1 млн км² — құрлықтың 11%-ы, тұщы судың ең ірі қоймасы (150-бет).", "Түрлері: жамылғы мұздықтар және тау мұздықтары (149-бет)."],
+  ozen: ["Өзендер бастауын көлдерден, бұлақтардан, еріген қар мен мұздан алады (146-бет).", "Ағын сулар қосылып, өзен біртіндеп ұлғаяды (146-бет).", "Жер бедеріне қарай: тау өзендері және жазық өзендері (146-бет).", "Ертіс — Қазақстандағы ең ұзын әрі суы мол өзен: 4248 км, Қазақстанда 1700 км (146-бет)."],
+  kol: ["Көл — құрлықтағы су толған тұйық шұңқыр, мұхитпен тікелей байланысы жоқ (147-бет).", "Қазаншұңқырдың шығу тегі: тектоникалық, жанартаулық, мұздық, карстық, сағалық (148-бет).", "Каспий — ең ірі көл (371 мың км²), Байкал — ең терең (1620 м) (148-бет).", "Қазақстанда 48 262 көл бар (149-бет)."],
+  batpak: ["Батпақ — кемінде 0,3 м шымтезек қабаты бар, шамадан тыс ылғалданған жер (149-бет).", "Себептері: жердің тегістігі, артық ылғал, топырақтың су өткізбеуі, жерасты суының жақындығы, тоң (149-бет).", "Әлемдегі ең үлкен батпақ — Васюган; батпақтар құрлықтың ~2%-ын алады (149-бет).", "Шымтезек бүкіл әлемде тыңайтқыш ретінде бағаланады (153-бет)."],
+  zherasty: ["Жерасты сулары жер қыртысында 12–16 км тереңдікке дейін болады (144-бет).", "Жауын-шашын мен жерүсті суларының жерге сіңуінен түзіледі (145-бет).", "Орналасуына қарай: топырақтық, грунт суы, қабатаралық (артезиан) (144-бет).", "Қазақстанда ~500 емдік минералды су көзі бар: Сарыағаш, Алмаарасан, Мерке (145-бет)."]
+};
+const BQT = ["ozen","zherasty","zherasty","zherasty","ozen","kol","kol","kol","batpak","batpak","muzdyk","muzdyk"];
+const SH = [["▲", "#e2483d"], ["◆", "#1e6fd9"], ["●", "#f2a900"], ["■", "#14a46c"]];
+
+// ===== экрандар =====
+const SCR = [
+  { i: "🏔️", t: "Басы", r: sHome },
+  { i: "💬", t: "Топ", r: sQuotes },
+  { i: "🎬", t: "Бейне", r: sVideo },
+  { i: "🗺️", t: "Саяхат", r: sMap },
+  { i: "📄", t: "Парақ", r: sSheet },
+  { i: "🏁", t: "Мәре", r: sFinish }
+];
+let cur = load("cur", 0);
+function go(i) {
+  cur = i; save("cur", i); clearTimer();
+  $("#rail").innerHTML = SCR.map((s, k) => `<button class="${k === cur ? "on" : k < cur ? "done" : ""}" onclick="go(${k})"><i>${s.i}</i>${s.t}</button>`).join("");
+  $("#main").innerHTML = `<div class="screen">${SCR[cur].r()}</div>`;
+  $("#topic").innerHTML = `<b>Тақырып:</b> ${LESSON.topic}`;
+  drawTeams(); inlineSvg(); if (cur === 0) memo();
+}
+function drawTeams(bump) { $("#teams").innerHTML = GROUPS.map(g => `<div class="team ${bump === g.id ? "bump" : ""}" style="--c:${g.color}">${g.icon}<b>${T[g.id]}</b></div>`).join(""); }
+function teamPlus(id, n) { T[id] = Math.max(0, T[id] + (n || 1)); persist(); drawTeams(id); setTimeout(() => drawTeams(), 400); }
+document.addEventListener("keydown", e => { if (e.target.tagName === "TEXTAREA") return; if (e.key === "ArrowRight" && cur < SCR.length - 1 && !$("#stationHost").innerHTML) go(cur + 1); if (e.key === "ArrowLeft" && cur > 0 && !$("#stationHost").innerHTML) go(cur - 1); if (e.key === "Escape") { closeStation(); closeModal(); } });
+
+// 1. Басы + мақсатты жаттау
+let memoL = 0;
+function sHome() {
+  return `<div class="hero"><img src="../img/panorama.svg" alt=""><div class="ttl"><div class="chip">8 сынып · География · §26–27</div><h1>${LESSON.topic.replace(". ", ".<br>")}</h1><p>${LESSON.school} · Мұғалім: ${LESSON.teacher}</p></div></div>
+  <div class="goals" id="memo"></div>
+  <div class="row" style="margin-top:12px"><span class="chip" id="memoStep" style="margin:0"></span><button class="btn" onclick="memoL=(memoL+1)%4;memo()">Сөздерді жасыру →</button></div>`;
+}
+function memo() {
+  const box = $("#memo"); if (!box) return;
+  box.innerHTML = LESSON.goals.map((g, gi) => `<div class="goal"><b>🎯 ${gi + 1}-МАҚСАТ</b>${g.split(" ").map((w, wi) => ((gi * 31 + wi * 17) % 10) / 10 < memoL * 0.34 ? `<span class="mw gone">${"_".repeat(Math.max(3, w.length))}</span>` : w).join(" ")}</div>`).join("");
+  $("#memoStep").textContent = ["Әдіс «Жоғалатын сөздер»: 1. Бірге оқимыз", "2. Жоғалған сөзді есіңе түсір", "3. Топпен айт", "4. Жатқа айт! 💪"][memoL];
+}
+
+// 2. Дәйексөз — топқа бөлу
+function sQuotes() {
+  const cards = QUOTES.map((d, i) => { const g = G(d.g); const o = ST.intro.includes(i);
+    return `<div class="qc ${o ? "open" : ""}" onclick="openQ(${i})"><div class="in"><div class="f"><div class="n">${i + 1}</div><div class="q">«${d.q}»</div><div class="a">— ${d.a}</div></div>
+    <div class="b" style="background-image:linear-gradient(180deg,${g.color}66,${g.color}ee),url(../${g.img})"><div class="g">${g.icon} ${g.name}</div><div class="w">${d.why}</div></div></div></div>`; }).join("");
+  return `<div class="panel"><div class="chip">Әдіс: «Дәйексөз — менің тобым»</div><h2>Тобыңды тап!</h2><div class="sub">10 оқушы орнынан дәйексөзді оқып: «Менің тобым — ..., себебі ...» дейді. Карточканы басып тексереміз. Қалғандары өз тобын карточкасы бойынша табады.</div>
+  <div class="qgrid">${cards}</div></div>`;
+}
+function openQ(i) { if (ST.intro.includes(i)) return; ST.intro.push(i); persist(); document.querySelectorAll(".qc")[i].classList.add("open"); if (ST.intro.length === QUOTES.length) confetti(); }
+
+// 3. Бейне
+function sVideo() {
+  return `<div class="panel"><div class="chip">Әдіс: «Көрдім — Білдім — Сұраймын»</div><h2>Саяхатқа дайындық: бейне</h2><div class="sub">Видеоны көреміз. Сосын 2 оқушы сұраққа жауап береді (+1 балл).</div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px"><video src="../kurlyk_sulary_qysqa.mp4" controls style="width:100%;border-radius:18px;background:#000"></video>
+  <div>${VIDEO_Q.map((q, i) => `<div style="background:#f3f8ff;border-radius:14px;padding:12px;margin-bottom:10px"><b>❓ ${q.q}</b><div class="ans hidden" style="margin-top:6px">${q.a}</div>
+    <div class="row" style="margin-top:8px"><button class="btn ghost" onclick="this.parentNode.previousElementSibling.classList.toggle('hidden')">Жауабы</button><button class="btn ok" onclick="openRand(true)">🎲 +1 балл</button></div></div>`).join("")}</div></div></div>`;
+}
+
+// 4. Саяхат картасы
+function sMap() {
+  return `<div class="panel" style="padding:16px 18px"><div class="row" style="justify-content:space-between"><div><div class="chip">Әдіс: «Квест» + «Спикерлер алаңы» + «Детектив»</div><h2>Тамшының саяхаты: 5 станция</h2></div>
+   <div class="sub" style="max-width:520px;margin:0">Тамшы мұздықтан басталып, жер астына дейін саяхаттайды. Станцияны басыңыз: сызба → кітаптан → сұрақтар → детектив → спикер.</div></div>
+   <div class="map"><img src="../img/panorama.svg" alt="">${ORDER.map((id, k) => { const g = G(id), p = HOT[id];
+     return `<button class="hs ${ST.done[id] ? "done" : ""}" style="--c:${g.color};left:${p[0]}%;top:${p[1]}%" onclick="openStation('${id}')">${g.icon}<span>${k + 1}. ${g.name}</span>${ST.done[id] ? '<i class="ck">✓</i>' : ""}</button>`; }).join("")}</div></div>`;
+}
+let stTab = "d", stId = null, qIdx = 0, qAns = null, qWho = null;
+function openStation(id) { stId = id; stTab = "f"; qIdx = 0; qAns = null; qWho = null; drawStation(); }
+function closeStation() { $("#stationHost").innerHTML = ""; clearTimer(); if (cur === 3) go(3); }
+function drawStation() {
+  const g = G(stId), qs = BOARD_Q.map((q, i) => i).filter(i => BQT[i] === stId), bk = BOOK_TASK.rows[stId];
+  let right = "";
+  if (stTab === "f") right = `<ul class="facts">${FACTS[stId].map(f => `<li>${f}</li>`).join("")}</ul>`;
+  if (stTab === "q") { const qi = qs[qIdx], q = BOARD_Q[qi];
+    right = `<div class="row" style="justify-content:space-between"><b>Сұрақ ${qIdx + 1} / ${qs.length}</b>${timerHTML(25)}</div><div class="qq">${q.q}</div>
+     <button class="btn" onclick="pickWho()" ${qAns !== null ? "disabled style='opacity:.5'" : ""}>🎲 Кім жауап береді?</button>${qWho !== null ? `<div class="who">🙋 ${esc(S[qWho].name)} (${G(S[qWho].g).name})</div>` : ""}
+     <div class="opts" style="margin-top:10px">${q.o.map((o, k) => { let c = ""; if (qAns !== null) c = k === q.a ? "right" : k === qAns ? "wrong" : "dim";
+       return `<button class="opt ${c}" style="--oc:${SH[k][1]}" onclick="answer(${qi},${k})" ${qAns !== null ? "disabled" : ""}>${SH[k][0]} ${o}</button>`; }).join("")}</div>
+     ${qAns !== null ? `<div class="who" style="margin-top:12px">${qAns === q.a ? "✅ Дұрыс! Оқушыға +1 балл, тобына +1 ұпай" : "❌ Қате. Дұрыс жауабы — жасыл."} ${qIdx < qs.length - 1 ? `<button class="btn" onclick="qIdx++;qAns=null;qWho=null;drawStation()">Келесі →</button>` : ""}</div>` : ""}
+     <div class="sub" style="margin-top:10px">Дескриптор: сұрақты оқиды · дұрыс жауапты таңдайды · түсіндіреді — 1 балл</div>`; }
+  if (stTab === "b") right = `<div class="row" style="justify-content:space-between"><b>🕵️ Детектив: ${bk[0]}-бет, дәптерге</b>${timerHTML(180)}</div>
+     <table style="margin-top:10px"><tr><th>Не жазамыз?</th><th>Дескриптор</th></tr>${BOOK_TASK.cols.map((c, k) => `<tr><td><b>${c}</b></td><td><span class="ans hidden">${bk[k + 1]}</span></td></tr>`).join("")}</table>
+     <div class="row" style="margin-top:10px"><button class="btn ok" onclick="document.querySelectorAll('.st .ans').forEach(e=>e.classList.remove('hidden'))">Дескрипторды ашу</button><span class="sub" style="margin:0">Әр жол — 1 балл (оқушының баллы «Мәре» бетінде қойылады)</span></div>`;
+  if (stTab === "s") right = `<div class="qq">🎤 «${g.name}» тобының спикері</div><div class="sub">Спикер сызбаны көрсетіп 1 минутта түсіндіреді: анықтамасы → қалай пайда болады → шаруашылық маңызы → Қазақстаннан мысал. Әлі балл алмаған оқушы спикерге сұрақ қояды.</div>
+     <div class="row"><button class="btn ok" onclick="openRand(false,'${stId}')">🎤 Спикерге +1 балл</button><button class="btn" onclick="openRand(true)">❓ Сұрақ қойғанға +1 балл</button></div>
+     <div class="row" style="margin-top:16px"><button class="btn ok" onclick="ST.done['${stId}']=1;S.forEach(x=>{if(x.g==='${stId}')x.gr=1});teamPlus('${stId}',2);persist();confetti();closeStation()">✓ Станция аяқталды (топқа +1 балл)</button></div>`;
+  const tabs = [["f", "📖 Кітаптан"], ["q", "❓ Сұрақтар"], ["b", "🕵️ Детектив"], ["s", "🎤 Спикер"]];
+  $("#stationHost").innerHTML = `<div class="st-wrap" onclick="if(event.target===this)closeStation()"><div class="st" style="--c:${g.color}">
+    <div class="st-head" style="--c:${g.color};--img:url(../${g.img})"><span style="font-size:36px">${g.icon}</span><h3>Станция: ${g.name}</h3><button class="btn ghost" onclick="closeStation()">✕ Картаға</button></div>
+    <div class="st-body"><div class="dwrap" data-d="../img/d_${stId}.svg"><img src="../img/d_${stId}.svg" alt=""></div>
+    <div><div class="tabs">${tabs.map(t => `<button class="${stTab === t[0] ? "on" : ""}" onclick="stTab='${t[0]}';qAns=null;drawStation()">${t[1]}</button>`).join("")}</div>${right}</div></div></div></div>`;
+  inlineSvg(); initTimer();
+}
+function pickWho() { let pool = S.map((s, i) => i).filter(i => !S[i].st); if (!pool.length) pool = S.map((s, i) => i);
+  let n = 0; (function step() { qWho = pool[Math.floor(Math.random() * pool.length)]; drawStation(); if (++n < 12) setTimeout(step, 70 + n * 14); else { beep(true); tStart(); } })(); }
+function answer(qi, k) { tPause(); qAns = k; const ok = k === BOARD_Q[qi].a; ST.ans[qi] = ok;
+  if (ok) { confetti(); if (qWho !== null) { S[qWho].st = 1; teamPlus(S[qWho].g); } } beep(ok); persist(); drawStation(); }
+
+// 5. Жұмыс парағы + тексеру
+let wsV = 0, wsStep = 0;
+function sSheet() {
+  const w = WORKSHEETS[wsV];
+  return `<div class="panel"><div class="chip">Әдіс: саралап оқыту (5 нұсқа) + «Үш сүзгі» тексеру</div><h2>Жұмыс парағы — 5 балл</h2>
+  <div class="row" style="margin-bottom:8px">${timerHTML(360)}<span class="sub" style="margin:0">«2 мысал» сұралса — екеуі де дұрыс болғанда 1 балл.</span></div>
+  <div class="steps">${["1. 🙋 Өзін-өзі тексереді", "2. 🤝 Көршісімен алмасады", "3. 👩‍🏫 Мұғалім баллды қояды"].map((s, k) => `<div class="${k === wsStep ? "on" : ""}" onclick="wsStep=${k};go(cur)">${s}</div>`).join("")}</div>
+  ${wsStep < 2 ? `<div class="tabs">${WORKSHEETS.map((x, k) => `<button class="${k === wsV ? "on" : ""}" style="--c:#1e6fd9" onclick="wsV=${k};go(cur)">${x.n}-нұсқа</button>`).join("")}</div>
+   <table><tr><th style="width:5%">№</th><th style="width:45%">Тапсырма</th><th>Дескриптор (дұрыс жауап)</th></tr>${w.tasks.map((t, i) => `<tr><td>${i + 1}</td><td>${t[0]}</td><td class="ans">${t[1]}</td></tr>`).join("")}</table>`
+   : scoreGrid("ws", 5)}</div>`;
+}
+function scoreGrid(c, max) { return `<div class="sgrid">${S.map((s, i) => `<div class="scell" style="--c:${G(s.g).color}">${esc(s.name)}<div class="pick">${Array.from({ length: max + 1 }, (_, v) => `<button class="${s[c] === v ? "on" : ""}" onclick="S[${i}].${c}=${v};persist();this.parentNode.querySelectorAll('button').forEach((b,k)=>b.classList.toggle('on',k===${v}))">${v}</button>`).join("")}</div></div>`).join("")}</div>`; }
+
+// 6. Мәре
+let finTab = "t";
+function sFinish() {
+  const mx = Math.max(1, ...Object.values(T));
+  const team = `<div class="bars">${GROUPS.map(g => `<div class="bar" style="--c:${g.color}"><div style="height:${18 + 82 * T[g.id] / mx}%">${T[g.id]}</div><span>${g.icon} ${g.name}</span></div>`).join("")}</div>`;
+  const crit = `<div class="tabs">${CRITERIA.map(c => `<button class="${finTab === c.id ? "on" : ""}" style="--c:#1e6fd9" onclick="finTab='${c.id}';go(cur)">${c.name} (0–${c.max})</button>`).join("")}<button class="${finTab === "t" ? "on" : ""}" style="--c:#14a46c" onclick="finTab='t';go(cur)">🏆 Барлығы / 10</button></div>
+   ${finTab === "t" ? `<div class="sgrid">${S.slice().sort((a, b) => tot(b) - tot(a)).map((s, k) => `<div class="scell" style="--c:${G(s.g).color}">${k < 3 ? ["🥇", "🥈", "🥉"][k] : k + 1 + "."} ${esc(s.name)}<div style="font-size:20px;color:#1e6fd9;font-weight:900">${tot(s)} / 10</div></div>`).join("")}</div>`
+     : scoreGrid(finTab, CRITERIA.find(c => c.id === finTab).max)}`;
+  const opts = [["🌊", "Өзендей ағып тұрмын", "#1e6fd9"], ["🏞️", "Көлдей толқып тұрмын", "#15a06c"], ["🌾", "Батпақта тұрып қалдым", "#8a6a3b"]];
+  const fq = ["💧 Құрлық сулары қалай пайда болады?", "🏭 Құрлық сулары адамға не береді?"];
+  return `<div class="panel"><div class="chip">Нәтиже · Әдіс: «Тамшының жолы»</div><h2>Мәре! Топтардың ұпайы</h2>${team}
+   <h3 style="margin:8px 0">Жеке бағалау (10 балл)</h3>${crit}
+   <h3 style="margin:16px 0 4px">Кері байланыс: тамшың қайда жетті?</h3>
+   ${fq.map((q, gi) => `<b>${q}</b><div class="fb" style="margin-bottom:10px">${opts.map((o, k) => `<div class="fbc" style="background:${o[2]}"><div style="font-size:30px">${o[0]}</div><b>${o[1]}</b><div class="c">${ST.fb[gi][k]}</div><button onclick="ST.fb[${gi}][${k}]=Math.max(0,ST.fb[${gi}][${k}]-1);persist();go(cur)">−</button> <button onclick="ST.fb[${gi}][${k}]++;persist();go(cur)">+</button></div>`).join("")}</div>`).join("")}
+   <div style="background:#eef6ff;border-radius:14px;padding:12px 16px;font-size:17px"><b>Үй тапсырмасы:</b> ${HOMEWORK}</div></div>`;
+}
+
+// ===== таймер =====
+let tI = null, tL = 0;
+function timerHTML(s) { return `<div class="timer" id="tm" data-s="${s}"><span class="t">${fmt(s)}</span><button onclick="tStart()">▶</button><button onclick="tPause()">⏸</button><button onclick="tReset()">↺</button></div>`; }
+const fmt = s => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+function initTimer() { clearInterval(tI); tI = null; const e = $("#tm"); if (e) tL = +e.dataset.s; }
+function clearTimer() { clearInterval(tI); tI = null; }
+function tStart() { if (tI) return; const e0 = $("#tm"); if (!e0) return; tI = setInterval(() => { const e = $("#tm"); if (!e) return clearTimer(); tL = Math.max(0, tL - 1); e.querySelector(".t").textContent = fmt(tL); if (!tL) { clearTimer(); e.classList.add("end"); beep(false); } }, 1000); }
+function tPause() { clearTimer(); }
+function tReset() { clearTimer(); const e = $("#tm"); if (!e) return; tL = +e.dataset.s; e.classList.remove("end"); e.querySelector(".t").textContent = fmt(tL); }
+
+// ===== кездейсоқ, тізім, модаль =====
+function openModal(h) { $("#modalHost").innerHTML = `<div class="modal" onclick="if(event.target===this)closeModal()"><div>${h}</div></div>`; }
+function closeModal() { $("#modalHost").innerHTML = ""; }
+function openRand(onlyNew, group) {
+  openModal(`<h2 style="text-align:center">🎲 Кездейсоқ оқушы</h2><div class="rname" id="rn">?</div><div class="row" style="justify-content:center"><button class="btn ok hidden" id="rg">+1 балл</button><button class="btn ghost" onclick="closeModal()">Жабу</button></div>`);
+  let pool = S.map((s, i) => i).filter(i => (!group || S[i].g === group) && !S[i].st); if (!pool.length) pool = S.map((s, i) => i).filter(i => !group || S[i].g === group);
+  const pick = pool[Math.floor(Math.random() * pool.length)]; let n = 0;
+  (function step() { const i = n < 16 ? pool[Math.floor(Math.random() * pool.length)] : pick; const e = $("#rn"); if (!e) return; e.textContent = S[i].name; e.style.color = G(S[i].g).color;
+    if (n++ < 16) setTimeout(step, 60 + n * 14); else { beep(true); const b = $("#rg"); b.classList.remove("hidden"); b.onclick = () => { S[pick].st = 1; teamPlus(S[pick].g); persist(); b.textContent = "✓ Берілді"; b.disabled = true; }; } })();
+}
+function openRoster() {
+  const txt = GROUPS.map(g => g.name + ":\n" + S.filter(s => s.g === g.id).map(s => s.name).join("\n")).join("\n\n");
+  openModal(`<h2>Оқушылар тізімі</h2><p class="sub">Топ атауынан кейін аты-жөнін жаңа жолдан жазыңыз.</p><textarea id="ro" rows="20">${esc(txt)}</textarea>
+   <div class="row" style="margin-top:10px"><button class="btn" onclick="saveRoster()">Сақтау</button><button class="btn ghost" onclick="if(confirm('Барлық балл өшеді?')){S.forEach(s=>{s.st=s.gr=s.bk=s.ws=0});Object.keys(T).forEach(k=>T[k]=0);ST={intro:[],done:{},ans:{},fb:[[0,0,0],[0,0,0]]};persist();closeModal();go(cur)}">Баллдарды тазалау</button><button class="btn ghost" onclick="closeModal()">Жабу</button></div>`);
+}
+function saveRoster() { const old = {}; S.forEach(s => old[s.name] = s); const out = []; let g = null;
+  $("#ro").value.split("\n").map(l => l.trim()).filter(Boolean).forEach(l => { const gg = GROUPS.find(x => x.name === l.replace(/:$/, "")); if (gg) { g = gg.id; return; } if (g) { const o = old[l] || {}; out.push({ name: l, g, st: o.st || 0, gr: o.gr || 0, bk: o.bk || 0, ws: o.ws || 0 }); } });
+  if (out.length) { S = out; persist(); } closeModal(); go(cur); }
+
+// ===== көмекшілер =====
+const svgC = {};
+function inlineSvg() { document.querySelectorAll(".dwrap[data-d]").forEach(w => { const u = w.dataset.d; const put = s => { w.innerHTML = s; w.removeAttribute("data-d"); };
+  if (svgC[u]) return put(svgC[u]); fetch(u).then(r => r.ok ? r.text() : Promise.reject()).then(s => { svgC[u] = s; put(s); }).catch(() => {}); }); }
+function confetti() { const c = ["#1e6fd9", "#21a0e8", "#14a46c", "#ffd23f", "#7b4fc9", "#ff7a59"]; for (let i = 0; i < 60; i++) { const d = document.createElement("div"); d.className = "conf"; d.style.left = Math.random() * 100 + "vw"; d.style.background = c[i % 6]; d.style.animationDelay = Math.random() * .5 + "s"; document.body.appendChild(d); setTimeout(() => d.remove(), 2500); } }
+function beep(ok) { try { const a = new (window.AudioContext || window.webkitAudioContext)(); const o = a.createOscillator(), g = a.createGain(); o.connect(g); g.connect(a.destination); g.gain.value = .12; (ok ? [523, 659, 784] : [300, 220]).forEach((f, i) => o.frequency.setValueAtTime(f, a.currentTime + i * .12)); o.start(); o.stop(a.currentTime + .45); } catch (e) {} }
+go(cur);
+</script>
+</body>
+</html>
